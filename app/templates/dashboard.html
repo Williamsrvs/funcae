@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - NeuroEduca</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #800000;
+            --secondary-color: #3897d6;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --info-color: #9b59b6;
+            --sidebar-width: 250px;
+            --sidebar-collapsed: 80px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, var(--primary-color), #800000);
+            color: white;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed);
+        }
+
+        
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed .sidebar-header h2 {
+            opacity: 0;
+            font-size: 0;
+        }
+
+        .toggle-btn {
+            position: absolute;
+            right: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--secondary-color);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: var(--primary-color);
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: all 0.3s ease;
+            min-height: 100vh;
+        }
+
+        .sidebar.collapsed + .main-content {
+            margin-left: var(--sidebar-collapsed);
+        }
+
+        /* Dashboard Header */
+        .dashboard-header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .dashboard-header h1 {
+            color: var(--primary-color);
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .dashboard-header p {
+            color: #6c757d;
+            margin: 5px 0 0 0;
+        }
+
+        /* Cards for Disciplines */
+        .discipline-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .discipline-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .discipline-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--card-color);
+        }
+
+        .discipline-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .discipline-card.auto-cuidado::before { background: var(--success-color); }
+        .discipline-card.linguagem::before { background: var(--secondary-color); }
+        .discipline-card.socializacao::before { background: var(--warning-color); }
+        .discipline-card.motrocidade::before { background: var(--danger-color); }
+        .discipline-card.motrocidade-global::before { background: var(--info-color); }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-right: 15px;
+        }
+
+        .auto-cuidado .card-icon { background: var(--success-color); }
+        .linguagem .card-icon { background: var(--secondary-color); }
+        .socializacao .card-icon { background: var(--warning-color); }
+        .motrocidade .card-icon { background: var(--danger-color); }
+        .motrocidade-global .card-icon { background: var(--info-color); }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .card-average {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .auto-cuidado .card-average { color: var(--success-color); }
+        .linguagem .card-average { color: var(--secondary-color); }
+        .socializacao .card-average { color: var(--warning-color); }
+        .motrocidade .card-average { color: var(--danger-color); }
+        .motrocidade-global .card-average { color: var(--info-color); }
+
+        .card-students {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+
+        /* Students Table */
+        .students-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f3f4;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .search-box {
+            max-width: 300px;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            border: none;
+            padding: 15px 12px;
+            text-align: center;
+        }
+
+        .table td {
+            padding: 15px 12px;
+            vertical-align: middle;
+            text-align: center;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: var(--primary-color);
+            text-align: left !important;
+        }
+
+        .grade-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: white;
+        }
+
+        .grade-excellent { background-color: var(--success-color); }
+        .grade-good { background-color: var(--secondary-color); }
+        .grade-average { background-color: var(--warning-color); }
+        .grade-needs-improvement { background-color: var(--danger-color); }
+
+        /* Progress Bar */
+        .progress-custom {
+            height: 8px;
+            border-radius: 4px;
+            background-color: #f1f3f4;
+            margin-top: 8px;
+        }
+
+        .progress-bar-custom {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .empty-state p {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .mobile-toggle { display: block; }
+            .sidebar { left: -100%; }
+            .sidebar.show { left: 0; }
+            .main-content { margin-left: 0; padding: 70px 15px 20px; }
+            .discipline-cards { grid-template-columns: 1fr; }
+            .table-responsive { border-radius: 10px; }
+            .section-header { flex-direction: column; gap: 15px; align-items: stretch; }
+            .search-box { max-width: 100%; }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-header { padding: 15px; text-align: center; }
+            .discipline-card { padding: 20px; }
+            .students-section { padding: 15px; }
+        }
+
+        /* Adicione ao seu <style> */
+.menu-cascata {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.menu-item {
+    position: relative;
+}
+
+.menu-btn {
+    width: 100%;
+    background: rgba(255,255,255,0.07);
+    border: none;
+    color: #fff;
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.menu-btn:hover, .menu-btn.active {
+    background: rgba(255,255,255,0.15);
+}
+
+.submenu {
+    display: none;
+    flex-direction: column;
+    background: rgba(255,255,255,0.05);
+    border-radius: 0 0 8px 8px;
+    margin-top: 2px;
+    padding-left: 32px;
+    padding-bottom: 8px;
+}
+
+.menu-item.open .submenu {
+    display: flex;
+}
+
+.submenu a {
+    color: #fff;
+    padding: 8px 0;
+    text-decoration: none;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+}
+
+.submenu a:hover {
+    color: var(--secondary-color);
+}
+
+.footer-sidebar {
+            font-size: 14px;
+            opacity: 0.7;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding: 15px 20px 0;
+            user-select: none;
+            transition: opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Toggle Button -->
+    <button class="mobile-toggle" onclick="toggleSidebarMobile()">
+        <i class="bi bi-list"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">   
+        <div class="sidebar-header">
+            <h2>NeuroEduc</h2>
+            <button class="toggle-btn" onclick="toggleSidebar()">
+                <i class="bi bi-chevron-left" id="toggleIcon"></i>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <div class="menu-cascata">
+                <div class="menu-item">
+                    <button class="menu-btn" onclick="toggleMenu(this)">
+                        <i class="bi bi-person-plus"></i> Cadastrar
+                    </button>
+                    <div class="submenu">
+                        <a href="/cad_aluno"><i class="bi bi-person"></i> Aluno</a>
+                        <a href="/cad_acesso"><i class="bi bi-person-badge"></i> Acesso</a>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <button class="menu-btn" onclick="toggleMenu(this)">
+                        <i class="bi bi-mortarboard"></i> Questionários Educação
+                    </button>
+                    <div class="submenu">
+                        <a href="/quest_pei"><i class="bi bi-file-earmark-text"></i> PEI</a>
+                        <a href="/quest_pedi"><i class="bi bi-file-earmark-text"></i> PDI</a>
+                        <a href="/quest_guide"><i class="bi bi-file-earmark-text"></i> GUIDE</a>
+                        <a href="/relatorio_avaliacao"><i class="bi bi-list"></i> Relatório Avaliação</a>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <button class="menu-btn" onclick="toggleMenu(this)">
+                        <i class="bi bi-person-plus"></i> Questionários Social
+                    </button>
+                    <div class="submenu">
+                        <a href="manutencao"><i class="bi bi-file-earmark-text"></i> Assistente Social</a>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <button class="menu-btn" onclick="toggleMenu(this)">
+                        <i class="bi bi-heart-pulse"></i> Questionários Piscicológico
+                    </button>
+                    <div class="submenu">
+                        <a href="manutencao"><i class="bi bi-chat-square-text"></i> Psicologia</a>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <button class="menu-btn" onclick="toggleMenu(this)">
+                        <i class="bi bi-ui-checks"></i> Gerenciamento de Alunos
+                    </button>
+                    <div class="submenu">
+                        <a href="/baixa_alunos"><i class="bi bi-file-earmark-text"></i> Baixa de Alunos</a>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <button class="menu-btn" onclick="toggleMenu(this)">
+                        <i class="bi bi-bar-chart"></i> Dashboards
+                    </button>
+                    <div class="submenu">
+                        <a href="/dashboard"><i class="bi bi-bar-chart"></i> Alunos</a>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <button class="menu-btn" onclick="toggleMenu(this)">
+                        <i class="bi bi-list"></i> Relatórios
+                    </button>
+                    <div class="submenu">
+                        <a href="/gerar_pdf_pei"><i class="bi bi-list"></i> Relatórios PEI</a>
+                        <a href="/gerar_pdf_pdi"><i class="bi bi-list"></i> Relatórios PDI</a>
+                        <a href="/gerar_pdf_guide"><i class="bi bi-list"></i> Relatórios GUIDE</a>
+                        <a href="/pei_excel"><i class="bi bi-table"></i> Planilha PEI</a>
+                        <a href="/gerar_excel_pdi"><i class="bi bi-table"></i> Planilha PDI</a>
+                        <a href="/gerar_excel_guide"><i class="bi bi-table"></i> Planilha GUIDE</a>
+                        <a href="{{ url_for('alunos_ativos_excel') }}"><i class="bi bi-person"></i> Alunos Ativos</a>
+                        <a href="{{ url_for('excel_alunos_inativos') }}"><i class="bi bi-person"></i> Alunos Inativos</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-sidebar">
+            <div class="menu-item">
+                <button class="menu-btn" onclick="toggleMenu(this)">
+                    <i class="bi bi-gear"></i> Configurações
+                </button>
+                <div class="submenu">
+                    <a href="/cad_acesso"><i class="bi bi-key"></i> Alterar Senha</a>
+                    <a href="/suport"><i class="bi bi-people"></i> Suporte Técnico</a>
+                    <a href="/manutencao"><i class="bi bi-people"></i> Usuários</a>
+                    <a href="/service_control"><i class="bi bi-gear"></i> Controle de Serviço</a>
+                </div>
+        <div class="footer-sidebar">
+            WR Consultoria e Desenvolvimento
+            <p>(082) 98109-0042</p>
+        </div>  
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <h1><i class="bi bi-bar-chart-fill me-2"></i>Dashboard de Desempenho</h1>
+            <p>Acompanhe o progresso dos alunos em todas as disciplinas com base no questionário GUIDE</p>
+        </div>
+
+        <div class="mb-4">
+            <a href="home" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left-circle me-2"></i> Voltar ao Início
+            </a>
+        </div>
+
+        <!-- Discipline Cards -->
+        <div class="discipline-cards">
+            <div class="discipline-card auto-cuidado">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="bi bi-heart-fill"></i>
+                    </div>
+                    <h3 class="card-title">Auto Cuidado</h3>
+                </div>
+                <div class="card-average" id="media-autocuidado">{{ data.medias.autocuidado }}</div>
+                <div class="card-students"><span id="total-alunos-1">{{ data.total_alunos }}</span> alunos avaliados</div>
+                <div class="progress-custom">
+                    <div class="progress-bar-custom" id="progress-autocuidado" style="width: 0%; background-color: var(--success-color);"></div>
+                </div>
+            </div>
+
+            <div class="discipline-card linguagem">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="bi bi-chat-text-fill"></i>
+                    </div>
+                    <h3 class="card-title">Linguagem</h3>
+                </div>
+                <div class="card-average" id="media-linguagem">0.0</div>
+                <div class="card-students"><span id="total-alunos-2">0</span> alunos avaliados</div>
+                <div class="progress-custom">
+                    <div class="progress-bar-custom" id="progress-linguagem" style="width: 0%; background-color: var(--secondary-color);"></div>
+                </div>
+            </div>
+
+            <div class="discipline-card socializacao">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <h3 class="card-title">Socialização</h3>
+                </div>
+                <div class="card-average" id="media-socializacao">0.0</div>
+                <div class="card-students"><span id="total-alunos-3">0</span> alunos avaliados</div>
+                <div class="progress-custom">
+                    <div class="progress-bar-custom" id="progress-socializacao" style="width: 0%; background-color: var(--warning-color);"></div>
+                </div>
+            </div>
+
+            <div class="discipline-card motrocidade">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="bi bi-hand-index-fill"></i>
+                    </div>
+                    <h3 class="card-title">Motrocidade</h3>
+                </div>
+                <div class="card-average" id="media-motrocidade">0.0</div>
+                <div class="card-students"><span id="total-alunos-4">0</span> alunos avaliados</div>
+                <div class="progress-custom">
+                    <div class="progress-bar-custom" id="progress-motrocidade" style="width: 0%; background-color: var(--danger-color);"></div>
+                </div>
+            </div>
+
+            <div class="discipline-card motrocidade-global">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="bi bi-activity"></i>
+                    </div>
+                    <h3 class="card-title">Motrocidade Global</h3>
+                </div>
+                <div class="card-average" id="media-motrocidade-global">0.0</div>
+                <div class="card-students"><span id="total-alunos-5">0</span> alunos avaliados</div>
+                <div class="progress-custom">
+                    <div class="progress-bar-custom" id="progress-motrocidade-global" style="width: 0%; background-color: var(--info-color);"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students Table Section -->
+        <div class="students-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="bi bi-table me-2"></i>Notas Detalhadas por Aluno</h2>
+                <div class="search-box" id="search-container" style="display: none;">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" id="searchStudent" placeholder="Buscar aluno...">
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive" id="table-container" style="display: none;">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Aluno</th>
+                            <th>Auto Cuidado</th>
+                            <th>Linguagem</th>
+                            <th>Socialização</th>
+                            <th>Motrocidade</th>
+                            <th>Motrocidade Global</th>
+                            <th>Média Geral</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody">
+                        <!-- Dados serão inseridos via JavaScript -->
+                        {% for aluno in data.alunos %}
+                            <tr class="student-row" data-name="{{ aluno.nome|lower }}">
+                                <td class="student-name">{{ aluno.nome }}</td>
+                                <td><span class="grade-badge {{ aluno.autocuidado|grade_class }}">{{ aluno.autocuidado|round(1) }}</span></td>
+                                <td><span class="grade-badge {{ aluno.linguagem|grade_class }}">{{ aluno.linguagem|round(1) }}</span></td>
+                                <td><span class="grade-badge {{ aluno.socializacao|grade_class }}">{{ aluno.socializacao|round(1) }}</span></td>
+                                <td><span class="grade-badge {{ aluno.motrocidade|grade_class }}">{{ aluno.motrocidade|round(1) }}</span></td>
+                                <td><span class="grade-badge {{ aluno.motrocidade_global|grade_class }}">{{ aluno.motrocidade_global|round(1) }}</span></td>
+                                <td><span class="grade-badge {{ aluno.media_geral|grade_class }}">{{ aluno.media_geral|round(1) }}</span></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            </div>
+            <div class="empty-state" id="empty-state">
+                <i class="bi bi-inbox"></i>
+                <h3>Nenhum aluno encontrado</h3>
+                <p>Adicione alunos ao sistema para visualizar o dashboard de desempenho.</p>
+            </div>
+        </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Dados do Flask - será populado pelo template
+        const dashboardData = {{ data | tojson }};
+
+        // Função para determinar classe da nota
+        function getGradeClass(grade) { 
+            grade = parseFloat(grade);
+            if (grade >= 9.0) return 'grade-excellent';
+            if (grade >= 7.0) return 'grade-good';
+            if (grade >= 5.0) return 'grade-average';
+            return 'grade-needs-improvement';
+        }
+
+        // Função para popular os cards
+        function populateCards(data) {
+            document.getElementById('media-autocuidado').textContent = data.medias.autocuidado;
+            document.getElementById('media-linguagem').textContent = data.medias.linguagem;
+            document.getElementById('media-socializacao').textContent = data.medias.socializacao;
+            document.getElementById('media-motrocidade').textContent = data.medias.motrocidade;
+            document.getElementById('media-motrocidade-global').textContent = data.medias.motrocidade_global;
+
+            // Atualizar total de alunos
+            document.querySelectorAll('[id^="total-alunos-"]').forEach(el => {
+                el.textContent = data.total_alunos;
+            });
+
+            // Atualizar barras de progresso
+            document.getElementById('progress-autocuidado').style.width = (data.medias.autocuidado * 10) + '%';
+            document.getElementById('progress-linguagem').style.width = (data.medias.linguagem * 10) + '%';
+            document.getElementById('progress-socializacao').style.width = (data.medias.socializacao * 10) + '%';
+            document.getElementById('progress-motrocidade').style.width = (data.medias.motrocidade * 10) + '%';
+            document.getElementById('progress-motrocidade-global').style.width = (data.medias.motrocidade_global * 10) + '%';
+        }
+
+        // Função para popular a tabela
+        function populateTable(data) {
+            const tbody = document.getElementById('studentsTableBody');
+            const tableContainer = document.getElementById('table-container');
+            const searchContainer = document.getElementById('search-container');
+            const emptyState = document.getElementById('empty-state');
+
+            if (data.alunos && data.alunos.length > 0) {
+                // Mostrar tabela e campo de busca
+                tableContainer.style.display = 'block';
+                searchContainer.style.display = 'block';
+                emptyState.style.display = 'none';
+
+                // Limpar tabela
+                tbody.innerHTML = '';
+
+                // Adicionar cada aluno
+                data.alunos.forEach(aluno => {
+                    const row = document.createElement('tr');
+                    row.className = 'student-row';
+                    row.setAttribute('data-name', aluno.nome.toLowerCase());
+
+                    row.innerHTML = `
+                        <td class="student-name">${aluno.nome}</td>
+                        <td><span class="grade-badge ${getGradeClass(aluno.autocuidado)}">${aluno.autocuidado.toFixed(1)}</span></td>
+                        <td><span class="grade-badge ${getGradeClass(aluno.linguagem)}">${aluno.linguagem.toFixed(1)}</span></td>
+                        <td><span class="grade-badge ${getGradeClass(aluno.socializacao)}">${aluno.socializacao.toFixed(1)}</span></td>
+                        <td><span class="grade-badge ${getGradeClass(aluno.motrocidade)}">${aluno.motrocidade.toFixed(1)}</span></td>
+                        <td><span class="grade-badge ${getGradeClass(aluno.motrocidade_global)}">${aluno.motrocidade_global.toFixed(1)}</span></td>
+                        <td><span class="grade-badge ${getGradeClass(aluno.media_geral)}">${aluno.media_geral.toFixed(1)}</span></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                // Configurar busca
+                setupSearch();
+            } else {
+                // Mostrar estado vazio
+                tableContainer.style.display = 'none';
+                searchContainer.style.display = 'none';
+                emptyState.style.display = 'block';
+            }
+        }
+
+        // Função para configurar a busca
+        function setupSearch() {
+            const searchInput = document.getElementById('searchStudent');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    const studentRows = document.querySelectorAll('.student-row');
+                    
+                    studentRows.forEach(row => {
+                        const studentName = row.getAttribute('data-name');
+                        if (studentName.includes(searchTerm)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        }
+
+        // Funções da sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            sidebar.classList.toggle('collapsed');
+            
+            if (sidebar.classList.contains('collapsed')) {
+                toggleIcon.className = 'bi bi-chevron-right';
+            } else {
+                toggleIcon.className = 'bi bi-chevron-left';
+            }
+        }
+
+        function toggleSidebarMobile() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
+        }
+
+        // Fechar sidebar mobile ao clicar fora
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const mobileToggle = document.querySelector('.mobile-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(e.target) && 
+                !mobileToggle.contains(e.target) && 
+                sidebar.classList.contains('show')) {
+                sidebar.classList.remove('show');
+            }
+        });
+
+        // Inicializar quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Popular os dados vindos do Flask
+            populateCards(dashboardData);
+            populateTable(dashboardData);
+
+            // Inicializar tooltips do Bootstrap
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+
+        // Adicione antes do </body>
+function toggleMenu(btn) {
+    // Fecha todos os outros menus
+    document.querySelectorAll('.menu-item').forEach(item => {
+        if (item.contains(btn)) {
+            item.classList.toggle('open');
+            btn.classList.toggle('active');
+        } else {
+            item.classList.remove('open');
+            item.querySelector('.menu-btn').classList.remove('active');
+        }
+    });
+}
+    </script>
+</body>
+</html>

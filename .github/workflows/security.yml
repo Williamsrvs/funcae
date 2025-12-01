@@ -1,0 +1,126 @@
+name: Security & Build Checks
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    name: Security Checks
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install bandit black flake8
+    
+    - name: Check for hardcoded credentials
+      run: |
+        grep -r "password\|SECRET\|API_KEY" app/ --include="*.py" || true
+        echo "⚠️ Review output above for hardcoded credentials"
+    
+    - name: Bandit security scan
+      run: bandit -r app/ -f json -o bandit-report.json || true
+    
+    - name: Black code formatting check
+      run: black --check app/ || true
+    
+    - name: Flake8 linting
+      run: flake8 app/ --max-line-length=100 || true
+    
+    - name: Docker build check
+      run: docker build -t neuroeduca:test . --no-cache
+
+  validate:
+    runs-on: ubuntu-latest
+    name: Configuration Validation
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Validate environment files
+      run: |
+        if [ ! -f ".env.example" ]; then
+          echo "❌ .env.example não encontrado"
+          exit 1
+        fi
+        echo "✓ .env.example validado"
+    
+    - name: Validate Docker files
+      run: |
+        docker-compose config > /dev/null
+        echo "✓ docker-compose.yml validado"
+    
+    - name: Validate requirements.txt
+      run: |
+        python -m pip install --dry-run -r requirements.txt
+        echo "✓ requirements.txt validado"
+    
+    - name: Check .gitignore
+      run: |
+        grep -E "\.env|\.pem|\.key|\.sql|logs/" .gitignore > /dev/null
+        echo "✓ .gitignore contém padrões sensíveis"
+
+  security-policy:
+    runs-on: ubuntu-latest
+    name: Security Policy Check
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Check DEPLOY.md exists
+      run: |
+        if [ ! -f "DEPLOY.md" ]; then
+          echo "❌ DEPLOY.md não encontrado"
+          exit 1
+        fi
+        echo "✓ DEPLOY.md encontrado"
+    
+    - name: Check README exists
+      run: |
+        if [ ! -f "README.md" ]; then
+          echo "❌ README.md não encontrado"
+          exit 1
+        fi
+        echo "✓ README.md encontrado"
+    
+    - name: Verify no secrets in repo
+      run: |
+        if grep -r "Q1k2v1y5\|auth-db1937\|u799109175_db_funcae" . --exclude-dir=.git --exclude="*.md" 2>/dev/null; then
+          echo "❌ Possíveis credenciais encontradas!"
+          exit 1
+        fi
+        echo "✓ Nenhuma credencial detectada"
+
+  notify:
+    needs: [security, validate, security-policy]
+    runs-on: ubuntu-latest
+    if: always()
+    name: Notification
+    
+    steps:
+    - name: Check build status
+      run: |
+        if [[ "${{ needs.security.result }}" == "failure" ]] || \
+           [[ "${{ needs.validate.result }}" == "failure" ]] || \
+           [[ "${{ needs.security-policy.result }}" == "failure" ]]; then
+          echo "❌ Alguns checks falharam"
+          exit 1
+        fi
+        echo "✅ Todos os checks passaram!"

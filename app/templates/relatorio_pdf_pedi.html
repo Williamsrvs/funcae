@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <title>Relatório PEDI - {{ respostas.nome_aluno }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 30px auto;
+            max-width: 900px;
+            color: #333;
+            background: #fafafa;
+        }
+        h1 {
+            color: #800020;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        hr {
+            border: none;
+            border-top: 2px solid #800020;
+            margin-bottom: 30px;
+            width: 50%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        h2 {
+            color: #800020;
+            border-left: 5px solid #800020;
+            padding-left: 10px;
+            margin-top: 40px;
+            margin-bottom: 25px;
+            font-weight: 700;
+            font-size: 1.4em;
+            background-color: #f4d6db;
+            border-radius: 5px;
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+        .aluno-info {
+            margin-bottom: 40px;
+            padding: 15px 20px;
+            background-color: #fff5f7;
+            border: 1px solid #aca8a9;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgb(228 168 178 / 0.3);
+        }
+
+        .header {
+            text-align: center;   /* garante centralização de tudo dentro */
+        }
+
+        .header img {
+            display: inline-block; /* em vez de block */
+            margin: 0 auto;
+            width: 100px;   /* menor, como você pediu */
+            height: auto;
+        }
+        .aluno-info h2 {
+            border-left: none;
+            background: transparent;
+            color: #800020;
+            padding-left: 0;
+            margin-bottom: 8px;
+        }
+        .aluno-info p {
+            font-size: 1.1em;
+            margin: 6px 0;
+        }
+        .section {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px 25px;
+            box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            column-gap: 20px;
+            row-gap: 18px;
+            align-items: start;
+        }
+        .section h2 {
+            grid-column: 1 / -1;
+            margin-top: 0;
+        }
+        .pergunta {
+            font-weight: 700;
+            color: #080808;
+            font-size: 1.05em;
+            margin: 0;
+            padding-top: 6px;
+            padding-bottom: 6px;
+            border-right: 3px solid #afacad;
+        }
+        .resposta {
+            margin: 0;
+            font-style: italic;
+            white-space: pre-wrap;
+            line-height: 1.4em;
+            color: #3a3a3a;
+            background-color: #fdf2f5;
+            border-radius: 5px;
+            padding: 10px 15px;
+            box-shadow: inset 1px 1px 3px rgb(255 255 255 / 0.7);
+            border: 1px solid #e0b0bb;
+            min-height: 40px;
+        }
+        footer {
+            margin-top: 50px;
+            font-size: 0.9em;
+            color: #555;
+            text-align: center;
+            border-top: 2px solid #800020;
+            padding-top: 15px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        footer p {
+            margin: 5px 0;
+        }
+        footer p:last-child {
+            font-size: 0.8em;
+            color: #888;
+        }
+        @media (max-width: 700px) {
+            .section {
+                grid-template-columns: 1fr;
+            }
+            .pergunta {
+                border-right: none;
+                border-bottom: 2px solid #aca8a9;
+                padding-bottom: 8px;
+                margin-bottom: 4px;
+            }
+            .resposta {
+                min-height: auto;
+                padding: 8px 10px;
+            }
+            .section h2 {
+                margin-bottom: 15px;
+            }
+            .assinaturas {
+                margin-top: 40px;
+                text-align: left;
+                font-weight: bold;
+                font-size: 1.1em;
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="https://nfcidada.sefaz.al.gov.br/wp-content/uploads/2017/11/funcae-logo.png"
+        alt="Logo PEI">
+    </div>
+    <h1>Relatório de Respostas PDI - Questionário de Desenvolvimento e Independência</h1>
+    <hr>
+    <div class="aluno-info">
+        <h2>Aluno: {{ respostas.nome_aluno }}</h2>
+        <h2>Matrícula: {{ respostas.matricula_aluno }}</h2>
+        <p><strong>ID:</strong> {{ respostas.id_aluno }}</p>
+        <p><strong>Data de Nascimento:</strong> {{ respostas.dt_nascimento }}</p>
+    </div>
+
+    <div class="section">
+        <h2>1. Cuidado Pessoal</h2>
+        <p class="pergunta">Alimentação com talher:</p>
+        <p class="resposta">{{ respostas.alimentacao_talher or '-' }}</p>
+        <p class="pergunta">Mastigação:</p>
+        <p class="resposta">{{ respostas.mastigacao or '-' }}</p>
+        <p class="pergunta">Ingestão de líquidos:</p>
+        <p class="resposta">{{ respostas.ingestao_liquidos or '-' }}</p>
+        <p class="pergunta">Cortar alimentos:</p>
+        <p class="resposta">{{ respostas.cortar_alimentos or '-' }}</p>
+        <p class="pergunta">Recurso para comer:</p>
+        <p class="resposta">{{ respostas.recurso_comer or '-' }}</p>
+        <p class="pergunta">Escovação dos dentes:</p>
+        <p class="resposta">{{ respostas.escovacao_dentes or '-' }}</p>
+        <p class="pergunta">Higiene das mãos:</p>
+        <p class="resposta">{{ respostas.higiene_maos or '-' }}</p>
+        <p class="pergunta">Uso de papel higiênico:</p>
+        <p class="resposta">{{ respostas.papel_higienico or '-' }}</p>
+        <p class="pergunta">Enxuga-se após banho:</p>
+        <p class="resposta">{{ respostas.enxugase_banho or '-' }}</p>
+        <p class="pergunta">Lembrete para higiene:</p>
+        <p class="resposta">{{ respostas.lembrete_higiene or '-' }}</p>
+        <p class="pergunta">Vestimenta (camisa):</p>
+        <p class="resposta">{{ respostas.vestimenta_camisa or '-' }}</p>
+        <p class="pergunta">Vestimenta (calça):</p>
+        <p class="resposta">{{ respostas.vestimenta_calca or '-' }}</p>
+        <p class="pergunta">Autonomia para zíper/amarras:</p>
+        <p class="resposta">{{ respostas.autonomia_ziper_amarras or '-' }}</p>
+        <p class="pergunta">Uso de calçados:</p>
+        <p class="resposta">{{ respostas.calcados or '-' }}</p>
+        <p class="pergunta">Diferencia frente/verso das roupas:</p> 
+        <p class="resposta">{{ respostas.diferencia_frente_verso or '-' }}</p>
+        <p class="pergunta">Comunicação para ir ao banheiro:</p>
+        <p class="resposta">{{ respostas.comunicacao_banheiro or '-' }}</p>
+        <p class="pergunta">Autonomia no uso do vaso sanitário:</p>
+        <p class="resposta">{{ respostas.autonomia_vaso_sanitario or '-' }}</p>
+        <p class="pergunta">Acidentes de urina/outros:</p>
+        <p class="resposta">{{ respostas.acidentes_urina_outros or '-' }}</p>
+        <p class="pergunta">Lavar as mãos:</p>
+        <p class="resposta">{{ respostas.lavar_maos or '-' }}</p>
+        <p class="pergunta">Supervisão no banheiro:</p>
+        <p class="resposta">{{ respostas.supervisao_banheiro or '-' }}</p>
+        <p class="pergunta">Observações:</p>
+        <p class="resposta">{{ respostas.observacoes or '-' }}</p>
+    </div>
+
+    <div class="section">
+        <h2>2. Mobilidade</h2>
+        <p class="pergunta">Senta sozinho:</p>
+        <p class="resposta">{{ respostas.senta_sozinho or '-' }}</p>
+        <p class="pergunta">Levanta da cadeira:</p>
+        <p class="resposta">{{ respostas.levanta_cadeira or '-' }}</p>
+        <p class="pergunta">Anda sozinho:</p>
+        <p class="resposta">{{ respostas.anda_sozinho or '-' }}</p>
+        <p class="pergunta">Abre portas:</p>
+        <p class="resposta">{{ respostas.abre_portas or '-' }}</p>
+        <p class="pergunta">Locomoção em escadas:</p>
+        <p class="resposta">{{ respostas.locomocao_escadas or '-' }}</p>
+        <p class="pergunta">Locomoção em terrenos variados:</p>
+        <p class="resposta">{{ respostas.locomocao_terrenos or '-' }}</p>
+        <p class="pergunta">Usa transporte:</p>
+        <p class="resposta">{{ respostas.usa_transporte or '-' }}</p>
+        <p class="pergunta">Empurra brinquedos:</p>
+        <p class="resposta">{{ respostas.empurra_brinquedos or '-' }}</p>
+        <p class="pergunta">Corre/pula:</p>
+        <p class="resposta">{{ respostas.corre_pula or '-' }}</p>
+        <p class="pergunta">Utiliza cadeira de rodas:</p>
+        <p class="resposta">{{ respostas.cadeira_rodas or '-' }}</p>
+        <p class="pergunta">Observações sobre mobilidade:</p>
+        <p class="resposta">{{ respostas.observacoes_mobilidade or '-' }}</p>
+    </div>
+
+    <div class="section">
+        <h2>3. Função Social</h2>
+        <p class="pergunta">Responde ao chamado:</p>
+        <p class="resposta">{{ respostas.responde_chamado or '-' }}</p>
+        <p class="pergunta">Contato visual:</p>
+        <p class="resposta">{{ respostas.contato_visual or '-' }}</p>
+        <p class="pergunta">Imita ações:</p>
+        <p class="resposta">{{ respostas.imita_acoes or '-' }}</p>
+        <p class="pergunta">Participa de brincadeiras:</p>
+        <p class="resposta">{{ respostas.participa_brincadeiras or '-' }}</p>
+        <p class="pergunta">Respeita turnos:</p>
+        <p class="resposta">{{ respostas.respeita_turnos or '-' }}</p>
+        <p class="pergunta">Fala palavras:</p>
+        <p class="resposta">{{ respostas.fala_palavras or '-' }}</p>
+        <p class="pergunta">Gestos/sinais:</p>
+        <p class="resposta">{{ respostas.gestos_sinais or '-' }}</p>
+        <p class="pergunta">Pede ajuda:</p>
+        <p class="resposta">{{ respostas.pede_ajuda or '-' }}</p>
+        <p class="pergunta">Compreende instruções:</p>
+        <p class="resposta">{{ respostas.compreende_instrucoes or '-' }}</p>
+        <p class="pergunta">Expressa sentimentos:</p>
+        <p class="resposta">{{ respostas.expressa_sentimento or '-' }}</p>
+        <p class="pergunta">Guarda brinquedo:</p>
+        <p class="resposta">{{ respostas.guarda_brinquedo or '-' }}</p>
+        <p class="pergunta">Lembra atividades:</p>
+        <p class="resposta">{{ respostas.lembra_atividades or '-' }}</p>
+        <p class="pergunta">Cumpre combinado:</p>
+        <p class="resposta">{{ respostas.cumpre_combinado or '-' }}</p>
+        <p class="pergunta">Escolhe roupas:</p>
+        <p class="resposta">{{ respostas.escolhe_roupas or '-' }}</p>
+        <p class="pergunta">Demonstra interesse:</p>
+        <p class="resposta">{{ respostas.demonstra_interesse or '-' }}</p>
+        <p class="pergunta">Observações função social:</p>
+        <p class="resposta">{{ respostas.observacoes_fun_social or '-' }}</p>
+    </div>
+
+    <div class="assinaturas">
+        <p>Responsável pelo Aluno: ________________________________________________________</p>
+        <p>Assinatura da diretora: ________________________________________________________</p>
+        <p>Assinatura da coordenadora pedagógica: _________________________________________</p>
+        <p>Data Assinatura Documento: ____/__________/_______</p>
+    </div>
+
+    <footer>
+        <p>Este relatório foi gerado automaticamente pelo sistema <strong>NeuroEduca</strong>.</p>
+        <p>&copy; 2025 <strong>WR System</strong>. Todos os direitos reservados.</p>
+    </footer>
+</body>
+</html>

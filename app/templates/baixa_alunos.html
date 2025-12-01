@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>📊 Gerenciamento de Alunos - NeuroEduc</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 10px;
+        }
+        .stats-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        .card-header-custom {
+            padding: 20px;
+            color: white;
+            border: none;
+            position: relative;
+        }
+        
+        .card-header-custom::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+        }
+        
+        .total-students {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .active-students {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+        }
+        
+        .inactive-students {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+        }
+        
+        .card-icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
+            float: right;
+            margin-top: -10px;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .card-number {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin: 10px 0 0 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .card-body-custom {
+            padding: 15px 20px;
+            background: white;
+        }
+        
+        .card-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .container-custom {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 15px;
+        }   
+        
+        .dashboard-title {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #2c3e50;
+            font-weight: 700;
+            font-size: 2.5rem;
+        }
+        body {
+            min-height: 100vh;
+            background-image: url("static/img/neuroeduc1.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .conteudo-central {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+
+        .title-text {
+            color: #800020;
+            font-weight: 700;
+        }
+
+        .btn-baixar {
+            background-color: #ffc107;
+            color: #000;
+            border: none;
+        }
+
+        .btn-baixar:hover {
+            background-color: #ffb300;
+        }
+
+        .btn-desfazer {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+        }
+
+        .btn-desfazer:hover {
+            background-color: #545b62;
+        }
+
+        .table-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .status-ativo {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .status-inativo {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+<div class="conteudo-central">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="title-text mb-0">
+            <i class="bi bi-person-x-fill me-2"></i>
+            Análise e Gerenciamento de Alunos
+        </h2>
+        <a href="{{ url_for('home') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+    </div>
+
+    <div class="container-custom">  
+        <h1 class="dashboard-title">
+            <i class="fas fa-graduation-cap"></i> Dashboard de Alunos
+        </h1>
+        
+        <div class="row">
+            <!-- Card Total de Alunos -->
+            <div class="col-lg-4 col-md-6 col-sm-12">
+                <div class="card stats-card">
+                    <div class="card-header-custom total-students">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h5 class="card-title">Total de Alunos</h5>
+                        <h2 class="card-number">{{ alunos|length }}</h2>
+                    </div>
+                    <div class="card-body-custom">
+                        <p class="card-description">
+                            <i class="fas fa-info-circle"></i> 
+                            Total geral de alunos cadastrados no sistema
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card Alunos Ativos -->
+            <div class="col-lg-4 col-md-6 col-sm-12">
+                <div class="card stats-card">
+                    <div class="card-header-custom active-students">
+                        <div class="card-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <h5 class="card-title">Alunos Ativos</h5>
+                        <h2 class="card-number">{{ total_ativos }}</h2>
+                    </div>
+                    <div class="card-body-custom">
+                        <p class="card-description">
+                            <i class="fas fa-check-circle text-success"></i> 
+                            Alunos com matrícula ativa e frequentando
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card Alunos Inativos -->
+            <div class="col-lg-4 col-md-6 col-sm-12">
+                <div class="card stats-card">
+                    <div class="card-header-custom inactive-students">
+                        <div class="card-icon">
+                            <i class="fas fa-user-times"></i>
+                        </div>
+                        <h5 class="card-title">Alunos Inativos</h5>
+                        <h2 class="card-number">{{ total_inativos }}</h2>
+                    </div>
+                    <div class="card-body-custom">
+                        <p class="card-description">
+                            <i class="fas fa-pause-circle text-warning"></i> 
+                            Alunos com matrícula suspensa ou cancelada
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card de Resumo (Opcional) -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card stats-card">
+                    <div class="card-body p-4">
+                        <h5 class="mb-3">
+                            <i class="fas fa-chart-pie text-primary"></i> 
+                            Resumo Estatístico
+                        </h5>
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <div class="border-end">
+                                    <h6 class="text-muted">Taxa de Ativos</h6>
+                                    <h4 class="text-success">
+                                        <span id="active-percentage">--</span>%
+                                    </h4>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="border-end">
+                                    <h6 class="text-muted">Taxa de Inativos</h6>
+                                    <h4 class="text-danger">
+                                        <span id="inactive-percentage">--</span>%
+                                    </h4>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h6 class="text-muted">Status</h6>
+                                <h4 class="text-info">
+                                    <i class="fas fa-chart-line"></i> Monitorando
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const totalAlunos = {{ alunos|length|default(0) }};
+    const totalAtivos = {{ total_ativos|default(0) }};
+    const totalInativos = {{ total_inativos|default(0) }};
+
+    // Calcular percentuais
+    function calcularPercentuais() {
+        if (totalAlunos > 0) {
+            const percentualAtivos = ((totalAtivos / totalAlunos) * 100).toFixed(1);
+            const percentualInativos = ((totalInativos / totalAlunos) * 100).toFixed(1);
+            
+            document.getElementById('active-percentage').textContent = percentualAtivos;
+            document.getElementById('inactive-percentage').textContent = percentualInativos;
+        } else {
+            // Caso não tenha alunos
+            document.getElementById('active-percentage').textContent = '0.0';
+            document.getElementById('inactive-percentage').textContent = '0.0';
+        }
+    }
+
+    // Executar quando a página carregar
+    document.addEventListener('DOMContentLoaded', calcularPercentuais);
+    </script>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="table-container">
+        <table class="table table-bordered table-striped table-hover">
+            <thead class="table-dark sticky-top">
+                <tr>
+                    <th width="80">Selecionar</th>
+                    <th width="100">Matrícula</th>
+                    <th>Nome do Aluno</th>
+                    <th width="120">Data Nascimento</th>
+                    <th width="80">Idade</th>
+                    <th width="150">Patologia</th>
+                    <th width="100">Status</th>
+                    <th width="150">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if alunos %}
+                    {% for aluno in alunos %}
+                    <tr>
+                        <td class="text-center">
+                            <input type="checkbox" class="form-check-input" name="aluno_id" value="{{ aluno.id_aluno }}">
+                        </td>
+                        <td><strong>{{ aluno.matricula_aluno }}</strong></td>
+                        <td>{{ aluno.nome_aluno }}</td>
+                        <td>{{ aluno.dt_nascimento.strftime('%d/%m/%Y') if aluno.dt_nascimento else 'N/A' }}</td>
+                        <td class="text-center">{{ aluno.idade or 'N/A' }}</td>
+                        <td>{{ aluno.patologia or 'N/A' }}</td>
+                        <td class="text-center">
+                            <span class="status-{{ 'ativo' if aluno.status_aluno == 'Ativo' else 'inativo' }}">
+                                {{ aluno.status_aluno }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <!-- Botão Baixar (só aparece se ativo) -->
+                            {% if aluno.status_aluno == 'Ativo' %}
+                                <button type="button" class="btn btn-baixar btn-sm me-1" 
+                                        onclick="confirmarBaixa('{{ aluno.id_aluno }}', '{{ aluno.nome_aluno }}')">
+                                    <i class="bi bi-arrow-down-circle"></i> Baixar
+                                </button>
+                            {% endif %}
+                            
+                            <!-- Botão Desfazer (só aparece se inativo) -->
+                            {% if aluno.status_aluno != 'Ativo' %}
+                                <button type="button" class="btn btn-desfazer btn-sm" 
+                                        onclick="confirmarReativar('{{ aluno.id_aluno }}', '{{ aluno.nome_aluno }}')">
+                                    <i class="bi bi-arrow-clockwise"></i> Reativar
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">
+                            <i class="bi bi-info-circle me-2"></i>
+                            Nenhum aluno encontrado
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Ações em lote -->
+    <div class="mt-4 p-3 bg-light rounded">
+        <h5>Ações em Lote:</h5>
+        <button type="button" class="btn btn-warning" onclick="baixarSelecionados()">
+            <i class="bi bi-arrow-down-circle"></i> Baixar Selecionados
+        </button>
+        <button type="button" class="btn btn-outline-secondary ms-2" onclick="selecionarTodos()">
+            <i class="bi bi-check-all"></i> Selecionar Todos
+        </button>
+        <button type="button" class="btn btn-outline-secondary ms-2" onclick="limparSelecao()">
+            <i class="bi bi-x-circle"></i> Limpar Seleção
+        </button>
+    </div>
+</div>
+
+<!-- Modais de Confirmação -->
+<div class="modal fade" id="modalConfirmaBaixa" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle"></i> Confirmar Baixa
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja dar <strong>baixa</strong> no aluno:</p>
+                <p class="fw-bold" id="nomeAlunoBaixa"></p>
+                <div class="mb-3">
+                    <label for="motivoBaixa" class="form-label">Motivo da baixa:</label>
+                    <select class="form-select" id="motivoBaixa" required>
+                        <option value="">Selecione o motivo...</option>
+                        <option value="Transferência">Transferência para outra instituição</option>
+                        <option value="Conclusão">Conclusão do programa</option>
+                        <option value="Desistência">Desistência da família</option>
+                        <option value="Mudança">Mudança de cidade</option>
+                        <option value="Outros">Outros motivos</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="observacoesBaixa" class="form-label">Observações:</label>
+                    <textarea class="form-control" id="observacoesBaixa" rows="3" placeholder="Digite observações sobre a baixa..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-warning" onclick="executarBaixa()">Confirmar Baixa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+
+let alunoParaBaixa = null;
+
+function confirmarBaixa(idAluno, nomeAluno) {
+    alunoParaBaixa = idAluno;
+    document.getElementById('nomeAlunoBaixa').textContent = nomeAluno;
+    new bootstrap.Modal(document.getElementById('modalConfirmaBaixa')).show();
+}
+
+function confirmarReativar(idAluno, nomeAluno) {
+    if (confirm(`Tem certeza que deseja REATIVAR o aluno: ${nomeAluno}?`)) {
+        // Criar formulário e enviar
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/reativar_aluno/${idAluno}`;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function executarBaixa() {
+    const motivo = document.getElementById('motivoBaixa').value;
+    const observacoes = document.getElementById('observacoesBaixa').value;
+    
+    if (!motivo) {
+        alert('Por favor, selecione um motivo para a baixa.');
+        return;
+    }
+    
+    // Criar formulário com dados da baixa
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/baixar_aluno/${alunoParaBaixa}`;
+    
+    // Adicionar campos hidden
+    const inputMotivo = document.createElement('input');
+    inputMotivo.type = 'hidden';
+    inputMotivo.name = 'motivo';
+    inputMotivo.value = motivo;
+    form.appendChild(inputMotivo);
+    
+    const inputObservacoes = document.createElement('input');
+    inputObservacoes.type = 'hidden';
+    inputObservacoes.name = 'observacoes';
+    inputObservacoes.value = observacoes;
+    form.appendChild(inputObservacoes);
+    
+    document.body.appendChild(form);
+    form.submit();
+}
+
+function selecionarTodos() {
+    const checkboxes = document.querySelectorAll('input[name="aluno_id"]');
+    checkboxes.forEach(cb => cb.checked = true);
+}
+
+function limparSelecao() {
+    const checkboxes = document.querySelectorAll('input[name="aluno_id"]');
+    checkboxes.forEach(cb => cb.checked = false);
+}
+
+function baixarSelecionados() {
+    const selecionados = Array.from(document.querySelectorAll('input[name="aluno_id"]:checked'))
+    .map(cb => cb.value);
+    
+    if (selecionados.length === 0) {
+        alert('Selecione pelo menos um aluno para dar baixa.');
+        return;
+    }
+    
+    if (confirm(`Confirma a baixa de ${selecionados.length} aluno(s) selecionado(s)?`)) {
+        // Implementar baixa em lote
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/baixa_lote';
+        
+        selecionados.forEach(id => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'alunos_ids';
+            input.value = id;
+            form.appendChild(input);
+        });
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
+</body>
+</html>

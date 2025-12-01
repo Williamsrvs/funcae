@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HelpDesk - Sistema de Suporte Técnico</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 1rem;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h2 {
+            color: #2d3748;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #4a5568;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        input[type="file"]::file-selector-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-right: 10px;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            opacity: 0.9;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .close {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(#a0aec0, #718096, #2d3748, #1a202c); 
+            color: rgb(32, 14, 196);
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .close:hover {
+            background: #db2c14;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(160, 174, 192, 0.4);
+        }
+        .btn-close:active {
+            transform: translateY(0);
+        }
+
+        .tickets-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .ticket-item {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .ticket-item:hover {
+            background: #edf2f7;
+            transform: translateX(5px);
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .ticket-id {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-aberto {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .status-andamento {
+            background: #feebc8;
+            color: #c05621;
+        }
+
+        .status-concluido {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .ticket-info {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .ticket-type {
+            display: inline-block;
+            background: #e6fffa;
+            color: #234e52;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            margin-top: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .footer p {
+            color: #4a5568;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .success-message {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 968px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #a0aec0;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        .file-preview {
+            background: #f7fafc;
+            border: 2px dashed #cbd5e0;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .file-preview img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .file-preview .pdf-icon {
+            font-size: 48px;
+            color: #e53e3e;
+            margin: 10px 0;
+        }
+
+        .file-info {
+            color: #4a5568;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        .remove-file {
+            background: #fc8181;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+
+        .remove-file:hover {
+            background: #e53e3e;
+        }
+
+        .file-link {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .file-link:hover {
+            text-decoration: underline;
+        }
+
+        .img-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+            border-radius: 15px;
+            size: 20px;
+        }
+        .img-header img {
+            height: 60px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="img-header">
+        <img src="{{ url_for('static', filename='img/wr.png') }}" alt="WR Consultoria e Desenvolvimento" style="height: 60px;">
+    </div>
+        <h1>🖥️ Sistema de Suporte Técnico</h1>
+        <p>Bem-vindo ao HelpDesk - Sua solução de atendimento</p>
+    </div>
+
+    <div class="main-container">
+        <div class="card">
+            <h2>
+                <span class="icon">✏️</span>
+                Abrir Novo Chamado
+            </h2>
+            <div id="successMessage" class="success-message">
+                ✓ Chamado registrado com sucesso!
+            </div>
+            <form method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Tipo de Solicitação</label>
+                    <select id="tipo" name="tipo" required>
+                        <option value="">Selecione o tipo</option>
+                        <option value="Erro Sistema">Erro no Sistema</option>
+                        <option value="Liberação Senha">Liberação de Senha</option>
+                        <option value="Resgate Acesso">Resgate de Acesso</option>
+                        <option value="Treinamento">Treinamento</option>
+                        <option value="Melhoria Sistema">Melhoria no Sistema</option>
+                        <option value="Outros Não Listado">Outros</option>
+                    </select>
+                </div>
+
+                <div class="dataRegistro">
+                <label>Selecione uma data</label>
+                <input type="date" id="dataRegistro" name="data_registro" required>
+                    </div>
+                <div class="form-group">
+                    <label>Nome do Usuário</label>
+                    <input type="text" id="nome_usuario"  name="nome_usuario" placeholder="Digite seu nome completo" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Anexar Evidência (opcional)</label>
+                    <input type="file" id="evidencia" name="evidencia" accept="image/*,.pdf" style="padding: 10px;">
+                    <small style="color: #718096; font-size: 0.85rem; margin-top: 5px; display: block;">
+                        Formatos aceitos: Imagens (JPG, PNG, GIF) e PDF (máx. 5MB)
+                    </small>
+                </div>
+                <div id="filePreview" style="margin-bottom: 20px;"></div>
+
+                <div class="form-group">
+                    <label>Descrição do Problema</label>
+                    <textarea id="descricao" name="descricao" placeholder="Descreva detalhadamente o problema ou solicitação..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn">Enviar Chamado</button>
+                <button type="close" class="close" style="background: #a0aec0; margin-top: 10px;" onclick="window.close();">Encerrar Chamado</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>
+                <span class="icon">📋</span>
+                Chamados Recentes
+            </h2>
+            <div id="ticketsList" class="tickets-list">
+                <div class="empty-state">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <p>Nenhum chamado registrado ainda</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2025 - Todos os Direitos Reservados a WR Consultoria e Desenvolvimento</p>
+        <p>📞 Tel: (82) 98109-0042</p>
+    </div>
+
+    <script>
+        let tickets = [];
+        let ticketIdCounter = 1;
+        let currentFile = null;
+
+        const form = document.getElementById('ticketForm');
+        const ticketsList = document.getElementById('ticketsList');
+        const successMessage = document.getElementById('successMessage');
+        const fileInput = document.getElementById('evidencia');
+        const filePreview = document.getElementById('filePreview');
+
+        // Gerenciar upload de arquivo
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            if (file) {
+                // Validar tamanho (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('❌ Arquivo muito grande! Tamanho máximo: 5MB');
+                    fileInput.value = '';
+                    return;
+                }
+
+                currentFile = file;
+                previewFile(file);
+            }
+        });
+
+        function previewFile(file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const fileType = file.type;
+                let previewHTML = '<div class="file-preview">';
+                
+                if (fileType.startsWith('image/')) {
+                    previewHTML += `
+                        <div class="file-info">📎 Imagem anexada: <strong>${file.name}</strong></div>
+                        <img src="${e.target.result}" alt="Preview">
+                    `;
+                } else if (fileType === 'application/pdf') {
+                    previewHTML += `
+                        <div class="pdf-icon">📄</div>
+                        <div class="file-info">PDF anexado: <strong>${file.name}</strong></div>
+                        <div class="file-info">Tamanho: ${(file.size / 1024).toFixed(2)} KB</div>
+                    `;
+                }
+                
+                previewHTML += `
+                    <button type="button" class="remove-file" onclick="removeFile()">🗑️ Remover arquivo</button>
+                </div>`;
+                
+                filePreview.innerHTML = previewHTML;
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        window.removeFile = function() {
+            currentFile = null;
+            fileInput.value = '';
+            filePreview.innerHTML = '';
+        };
+
+        form.addEventListener('submit', function(e) {
+            
+
+            const newTicket = {
+                id: ticketIdCounter++,
+                tipo: document.getElementById('tipo').value,
+                nome_usuario: document.getElementById('nome_usuario').value,
+                evidencia: currentFile ? {
+                    nome: currentFile.name,
+                    tipo: currentFile.type,
+                    tamanho: currentFile.size,
+                    data: URL.createObjectURL(currentFile)
+                } : null,
+                descricao: document.getElementById('descricao').value,
+                dataRegistro: new Date(),
+                status: 'Aberto'
+            };
+
+            tickets.unshift(newTicket);
+            renderTickets();
+            form.reset();
+            removeFile();
+
+            successMessage.style.display = 'block';
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 3000);
+        });
+
+        function renderTickets() {
+            if (tickets.length === 0) {
+                ticketsList.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <p>Nenhum chamado registrado ainda</p>
+                    </div>
+                `;
+                return;
+            }
+
+            ticketsList.innerHTML = tickets.map(ticket => {
+                const statusClass = ticket.status === 'Aberto' ? 'status-aberto' : 
+            ticket.status === 'Em Andamento' ? 'status-andamento' : 'status-concluido';
+                
+                const formattedDate = ticket.dataRegistro.toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                let evidenciaHTML = '';
+                if (ticket.evidencia) {
+                    const icon = ticket.evidencia.tipo.startsWith('image/') ? '🖼️' : '📄';
+                    evidenciaHTML = `
+                        <div class="ticket-info">
+                            <strong>Anexo:</strong> 
+                            <a href="${ticket.evidencia.data}" target="_blank" class="file-link">
+                                ${icon} ${ticket.evidencia.nome}
+                            </a>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="ticket-item">
+                        <div class="ticket-header">
+                            <span class="ticket-id">#${ticket.id}</span>
+                            <span class="status-badge ${statusClass}">${ticket.status}</span>
+                        </div>
+                        <div class="ticket-type">${ticket.tipo}</div>
+                        <div class="ticket-info"><strong>Usuário:</strong> ${ticket.nome_usuario}</div>
+                        <div class="ticket-info"><strong>Data:</strong> ${formattedDate}</div>
+                        ${evidenciaHTML}
+                        <div class="ticket-info"><strong>Descrição:</strong> ${ticket.descricao.substring(0, 100)}${ticket.descricao.length > 100 ? '...' : ''}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Adicionar alguns tickets de exemplo
+        setTimeout(() => {
+            const exampleTickets = [
+                {
+                    id: ticketIdCounter++,
+                    tipo: 'Erro Sistema',
+                    nome_usuario: 'Maria Silva',
+                    evidencia: null,
+                    descricao: 'Sistema apresenta erro ao tentar salvar dados no módulo de relatórios',
+                    dataRegistro: new Date(Date.now() - 3600000),
+                    status: 'Em Andamento'
+                },
+                {
+                    id: ticketIdCounter++,
+                    tipo: 'Liberação Senha',
+                    nome_usuario: 'João Santos',
+                    evidencia: null,
+                    descricao: 'Esqueci minha senha e preciso de liberação urgente para acessar o sistema',
+                    dataRegistro: new Date(Date.now() - 7200000),
+                    status: 'Concluído'
+                }
+            ];
+            tickets = exampleTickets;
+            renderTickets();
+        }, 500);
+    </script>
+    
+</body>
+</html>

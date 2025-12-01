@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<title>Relatório PEI - {{ aluno.id_aluno }}</title>
+<style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 30px auto;
+        max-width: 900px;
+        color: #333;
+        background: #fafafa;
+    }
+    h1 {
+        color: #800020;
+        text-align: center;
+        margin-bottom: 10px;
+        font-weight: 700;
+    }
+    hr {
+        border: none;
+        border-top: 2px solid #800020;
+        margin-bottom: 30px;
+        width: 50%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    h2 {
+        color: #800020;
+        border-left: 5px solid #800020;
+        padding-left: 10px;
+        margin-top: 40px;
+        margin-bottom: 25px;
+        font-weight: 700;
+        font-size: 1.4em;
+        background-color: #f4d6db;
+        border-radius: 5px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    .header {
+    text-align: center;   /* garante centralização de tudo dentro */
+    }
+
+    .header img {
+    display: inline-block; /* em vez de block */
+    margin: 0 auto;
+    width: 100px;   /* menor, como você pediu */
+    height: auto;
+    }
+
+    .aluno-info {
+        margin-bottom: 40px;
+        padding: 15px 20px;
+        background-color: #fff5f7;
+        border: 1px solid #aca8a9;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgb(228 168 178 / 0.3);
+    }
+    .aluno-info h2 {
+        border-left: none;
+        background: transparent;
+        color: #800020;
+        padding-left: 0;
+        margin-bottom: 8px;
+    }
+    .aluno-info p {
+        font-size: 1.1em;
+        margin: 6px 0;
+    }
+    .section {
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px 25px;
+        box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+        margin-bottom: 30px;
+        display: grid;
+        grid-template-columns: 1fr 2fr; /* duas colunas: pergunta + resposta */
+        column-gap: 20px;
+        row-gap: 18px;
+        align-items: start;
+    }
+    .section h2 {
+        /* Para o título da seção, que ocupa as 2 colunas */
+        grid-column: 1 / -1;
+        margin-top: 0;
+    }
+    .pergunta {
+        font-weight: 700;
+        color: #080808;
+        font-size: 1.05em;
+        margin: 0; /* removendo margens extras */
+        padding-top: 6px;
+        padding-bottom: 6px;
+        border-right: 3px solid #afacad;
+    }
+    .resposta {
+        margin: 0;
+        font-style: italic;
+        white-space: pre-wrap;
+        line-height: 1.4em;
+        color: #3a3a3a;
+        background-color: #fdf2f5;
+        border-radius: 5px;
+        padding: 10px 15px;
+        box-shadow: inset 1px 1px 3px rgb(255 255 255 / 0.7);
+        border: 1px solid #e0b0bb;
+        min-height: 40px;
+    }
+    footer {
+        margin-top: 50px;
+        font-size: 0.9em;
+        color: #555;
+        text-align: center;
+        border-top: 2px solid #800020;
+        padding-top: 15px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    footer p {
+        margin: 5px 0;
+    }
+    footer p:last-child {
+        font-size: 0.8em;
+        color: #888;
+    }
+
+    /* Responsividade simples: em telas pequenas, coluna única */
+    @media (max-width: 700px) {
+        .section {
+            grid-template-columns: 1fr;
+        }
+        .pergunta {
+            border-right: none;
+            border-bottom: 2px solid #aca8a9;
+            padding-bottom: 8px;
+            margin-bottom: 4px;
+        }
+        .resposta {
+            min-height: auto;
+            padding: 8px 10px;
+        }
+        .section h2 {
+            margin-bottom: 15px;
+        }
+
+        .assinaturas {
+    margin-top: 40px;
+    text-align: left;
+    font-weight: bold;
+    font-size: 1.1em;
+    page-break-before: always;
+}
+
+    }
+
+        
+
+
+</style>
+</head>
+<body>
+    <div class="header">
+        <img src="https://nfcidada.sefaz.al.gov.br/wp-content/uploads/2017/11/funcae-logo.png"
+        alt="Logo PEI">
+    </div>
+
+
+    <h1>Relatório de Respostas PEI - Plano Educacional Individualizado</h1>
+    <hr>
+
+    <div class="aluno-info">
+        <h2>Aluno: {{ aluno.nome_aluno }}</h2>
+        <h2>Matrícula: {{ aluno.matricula_aluno }}</h2>
+        <p><strong>ID:</strong> {{ aluno.id_aluno }}</p>
+        <p><strong>Data de Nascimento:</strong> {{ aluno.dt_nascimento }}</p>
+    </div>
+
+    <div class="section">
+        <h2>1. Desenvolvimento Geral do Aluno</h2>
+        <p class="pergunta">A criança apresenta autonomia nas atividades do dia a dia?</p>
+        <p class="resposta">{{ respostas.autonomia | default('-') }}</p>
+
+        <p class="pergunta">Há atraso na linguagem ou motricidade?</p>
+        <p class="resposta">{{ respostas.atraso_desenvolvimento | default('-') }}</p>
+
+        <p class="pergunta">Questões de saúde que impactam a aprendizagem:</p>
+        <p class="resposta">{{ respostas.questoes_saude | default('-') }}</p>
+
+        <p class="pergunta">Potencialidades e talentos percebidos:</p>
+        <p class="resposta">{{ respostas.talentos | default('-') }}</p>
+    </div>
+
+    <div class="section">
+        <h2>2. Habilidades Escolares</h2>
+        <p class="pergunta">Atividades de leitura e escrita:</p>
+        <p class="resposta">{{ respostas.leitura_escrita | default('-') }}</p>
+
+        <p class="pergunta">Noções matemáticas:</p>
+        <p class="resposta">{{ respostas.numeros_matematica | default('-') }}</p>
+
+        <p class="pergunta">Apresenta interesse pelas aulas?</p>
+        <p class="resposta">{{ respostas.interesse_aulas | default('-') }}</p>
+
+        <p class="pergunta">Recursos pedagógicos que favorecem a aprendizagem:</p>
+        <p class="resposta">{{ respostas.recursos_aprendizagem | default('-') }}</p>
+
+        <p class="pergunta">Barreiras enfrentadas no ambiente escolar:</p>
+        <p class="resposta">{{ respostas.barreiras | default('-') }}</p>
+    </div>
+
+    <div class="section">
+        <h2>3. Comportamento e Interação Social</h2>
+        <p class="pergunta">Como se comunica com colegas e professores?</p>
+        <p class="resposta">{{ respostas.comunicacao | default('-') }}</p>
+
+        <p class="pergunta">Tipo de linguagem utilizada (verbal, Libras, PECS, etc):</p>
+        <p class="resposta">{{ respostas.tipo_linguagem | default('-') }}</p>
+
+        <p class="pergunta">Participa de atividades em grupo?</p>
+        <p class="resposta">{{ respostas.atividades_grupo | default('-') }}</p>
+
+        <p class="pergunta">Comportamentos desafiadores observados:</p>
+        <p class="resposta">{{ respostas.comp_desaf | default('-') }}</p>
+
+        <p class="pergunta">Facilidade de socialização?</p>
+        <p class="resposta">{{ respostas.socializacao | default('-') }}</p>
+    </div>
+
+    <div class="section">
+        <h2>4. Necessidades de Apoio</h2>
+        <p class="pergunta">O aluno precisa de ajuda para:</p>
+        <p class="resposta">
+            {% if respostas.apoios %}
+                {{ respostas.apoios.replace(', ', '<br>')| safe }}
+            {% else %}
+                -
+            {% endif %}
+        </p>
+
+        <p class="pergunta">Utiliza equipamentos assistivos (cadeira de rodas, tablet, etc)?</p>
+        <p class="resposta">{{ respostas.equipamentos | default('-') }}</p>
+    </div>
+
+    <div class="section">
+        <h2>5. Estratégias e Adaptações</h2>
+        <p class="pergunta">Estratégias pedagógicas eficazes:</p>
+        <p class="resposta">{{ respostas.estrategias | default('-') }}</p>
+
+        <p class="pergunta">Adaptações curriculares necessárias:</p>
+        <p class="resposta">{{ respostas.adaptacoes_curriculares | default('-') }}</p>
+
+        <p class="pergunta">Materiais ou recursos visuais eficazes:</p>
+        <p class="resposta">{{ respostas.materiais_concretos | default('-') }}</p>
+
+        <p class="pergunta">O que o aluno precisa para participar das avaliações escolares:</p>
+        <p class="resposta">{{ respostas.avaliacoes | default('-') }}</p>
+    </div>
+
+    <div class="section">
+        <h2>6. Objetivos do PEI</h2>
+        <p class="pergunta">Área cognitiva:</p>
+        <p class="resposta">{{ respostas.objetivo_cognitivo | default('-') }}</p>
+
+        <p class="pergunta">Linguagem/Comunicação:</p>
+        <p class="resposta">{{ respostas.objetivo_linguagem | default('-') }}</p>
+
+        <p class="pergunta">Autonomia:</p>
+        <p class="resposta">{{ respostas.objetivo_autonomia | default('-') }}</p>
+
+        <p class="pergunta">Interação social:</p>
+        <p class="resposta">{{ respostas.objetivo_interacao | default('-') }}</p>
+
+        <p class="pergunta">Habilidades motoras:</p>
+        <p class="resposta">{{ respostas.objetivo_motor | default('-') }}</p>
+
+        <p class="pergunta">Comportamento:</p>
+        <p class="resposta">{{ respostas.objetivo_comportamento | default('-') }}</p>
+    </div>
+
+    <div class="section">
+        <h2>7. Outras Informações</h2>
+        <p class="pergunta">Histórico escolar anterior:</p>
+        <p class="resposta">{{ respostas.historico_escolar | default('-') }}</p>
+
+        <p class="pergunta">Considerações da família:</p>
+        <p class="resposta">{{ respostas.consideracoes_familia | default('-') }}</p>
+
+        <p class="pergunta">Observações dos professores:</p>
+        <p class="resposta">{{ respostas.observacoes_professores | default('-') }}</p>
+
+        <p class="pergunta">Comentários da equipe técnica:</p>
+        <p class="resposta">{{ respostas.comentarios_equipe | default('-') }}</p>
+    </div>
+
+    <div class="section">
+        <h2>8. Acompanhamento e Avaliação</h2>
+        <p class="pergunta">Frequência de reavaliação:</p>
+        <p class="resposta">{{ respostas.frequencia_reavaliacao | default('-') }}</p>
+
+        <p class="pergunta">Responsável pelo acompanhamento:</p>
+        <p class="resposta">{{ respostas.responsavel_acompanhamento | default('-') }}</p>
+
+        <p class="pergunta">Reuniões agendadas com família e equipe:</p>
+        <p class="resposta">{{ respostas.reunioes | default('-') }}</p>
+    </div>
+
+    <!-- Incluíndo campos para assinatura da diretora e coordenadora pedagógica-->
+    <div class="assinaturas">
+    <p>Responsável pelo Aluno: ________________________________________________________</p>
+
+    <p>Assinatura da diretora: ________________________________________________________</p>
+
+    <p>Assinatura da coordenadora pedagógica: _________________________________________</p>
+
+    <p>Data Assinatura Documento: ____/__________/_______</p>
+</div>
+
+
+
+    <footer>
+        <p>Este relatório foi gerado automaticamente pelo sistema <strong>NeuroEduca</strong>.</p>
+        
+        <p>&copy; 2025 <strong>WR System</strong>. Todos os direitos reservados.</p>
+    </footer>
+</body>
+</html>

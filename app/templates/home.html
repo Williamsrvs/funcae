@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <title>💡 NeuroEduc</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            color: #333;
+            overflow: hidden;
+        }   
+        
+        /* Sidebar Styles */
+        .sidebar {
+            background: linear-gradient(180deg, #800000 0%, #660000 100%);
+            color: white;
+            width: 260px;
+            height: 100vh;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+            transition: width 0.3s ease, padding 0.3s ease;
+            position: relative;
+            z-index: 1000;
+        }
+        
+        .sidebar.collapsed {
+            width: 70px;
+            padding: 20px 0;
+        }
+        
+        .sidebar-header {
+            padding: 0 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .sidebar.collapsed .sidebar-header {
+            padding: 0 15px;
+            justify-content: center;
+        }
+        
+        .sidebar h2 {
+            margin: 0;
+            font-weight: 700;
+            font-size: 24px;
+            letter-spacing: 1px;
+            color: #fff;
+            transition: opacity 0.3s ease;
+        }
+        
+        .sidebar.collapsed h2 {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .toggle-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .toggle-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
+        }
+        
+        .sidebar.collapsed .toggle-btn {
+            margin: 0 auto;
+        }
+        
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        
+        .menu-cascata {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 0 15px;
+        }
+        
+        .sidebar.collapsed .menu-cascata {
+            padding: 0 10px;
+        }
+        
+        .menu-btn {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 15px;
+            margin: 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 100%;
+            text-align: left;
+            position: relative;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .sidebar.collapsed .menu-btn {
+            justify-content: center;
+            padding: 12px 8px;
+        }
+        
+        .menu-btn:hover, .menu-btn.active {
+            background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.15) 100%);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .sidebar.collapsed .menu-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .menu-btn i {
+            margin-right: 12px;
+            font-size: 1.2em;
+            min-width: 20px;
+            text-align: center;
+            transition: margin 0.3s ease;
+        }
+        
+        .sidebar.collapsed .menu-btn i {
+            margin-right: 0;
+        }
+        
+        .menu-btn .text {
+            transition: opacity 0.3s ease;
+        }
+        
+        .sidebar.collapsed .menu-btn .text {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .submenu {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            margin-left: 25px;
+            margin-top: 8px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar.collapsed .submenu {
+            display: none !important;
+        }
+        
+        .menu-btn.open + .submenu {
+            display: flex;
+        }
+        
+        .submenu a {
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%);
+            color: #fff;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 14px;
+            text-decoration: none;
+            margin-bottom: 4px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+        }
+        
+        .submenu a i {
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
+        }
+        
+        .submenu a:hover {
+            background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.2) 100%);
+            transform: translateX(8px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        }
+        
+        .footer-sidebar {
+            font-size: 12px;
+            opacity: 0.7;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding: 15px 20px 0;
+            user-select: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .sidebar.collapsed .footer-sidebar {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        /* Content Styles */
+        .content {
+            flex: 1;
+            padding: 30px 40px;
+            overflow-y: auto;
+            transition: margin-left 0.3s ease;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(128, 0, 0, 0.1);
+        }
+        
+        .content h1 {
+            font-weight: 700;
+            font-size: 32px;
+            margin: 0;
+            color: #800000;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .content p {
+            font-size: 17px;
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 30px;
+        }
+        
+        .right-section .btn {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+        }
+        
+        .right-section .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+            background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+        }
+        
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .dashboard-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            border: 1px solid rgba(128, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #800000, #a52a2a);
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+        }
+        
+        .dashboard-card h3 {
+            color: #800000;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .highlight {
+            color: #800000;
+            font-weight: bold;
+            background: linear-gradient(135deg, rgba(128, 0, 0, 0.1), rgba(128, 0, 0, 0.05));
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        
+        /* Tooltip for collapsed sidebar */
+        .tooltip-text {
+            visibility: hidden;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 12px;
+            position: absolute;
+            z-index: 1001;
+            left: 80px;
+            top: 50%;
+            transform: translateY(-50%);
+            white-space: nowrap;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .sidebar.collapsed .menu-btn:hover .tooltip-text {
+            visibility: visible;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: fixed;
+                top: 0;
+                left: -100%;
+                z-index: 1050;
+                transition: left 0.3s ease;
+            }
+            
+            .sidebar.show {
+                left: 0;
+            }
+            
+            .sidebar.collapsed {
+                width: 100%;
+                left: -100%;
+            }
+            
+            .content {
+                margin-left: 0;
+                padding: 20px;
+            }
+            
+            .mobile-toggle {
+                display: block;
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                z-index: 1060;
+                background: #800000;
+                color: white;
+                border: none;
+                padding: 10px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            }
+        }
+        
+        .mobile-toggle {
+            display: none;
+        }
+        
+        @media (min-width: 769px) {
+            .sidebar.show {
+                left: 0;
+            }
+        }
+        
+        /* Scrollbar Styling */
+        .sidebar-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .sidebar-content::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-content::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+        }
+        
+        .content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .content::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        .content::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+</head>
+<body>
+    <button class="mobile-toggle" onclick="toggleSidebarMobile()">
+        <i class="bi bi-list"></i>
+    </button>
+
+    <nav class="sidebar" id="sidebar">   
+        <div class="sidebar-header">
+            <h2>NeuroEduc</h2>
+            <button class="toggle-btn" onclick="toggleSidebar()">
+                <i class="bi bi-chevron-left" id="toggleIcon"></i>
+            </button>
+        </div>
+        
+        <div class="sidebar-content">
+            <div class="menu-cascata">
+                <button class="menu-btn" onclick="toggleMenu(this)">
+                    <i class="bi bi-person-plus"></i> 
+                    <span class="text">Cadastrar</span>
+                    <span class="tooltip-text">Cadastrar</span>
+                </button>
+                <div class="submenu">
+                    <a href="/cad_aluno"><i class="bi bi-person"></i> Aluno</a>
+                    <a href="/cad_acesso"><i class="bi bi-person-badge"></i> Acesso</a>
+                </div>
+                
+                <button class="menu-btn" onclick="toggleMenu(this)">
+                    <i class="bi bi-mortarboard"></i> 
+                    <span class="text">Questionários Educação</span>
+                    <span class="tooltip-text">Questionários Educação</span>
+                </button>
+                <div class="submenu">
+                    <a href="/quest_pei"><i class="bi bi-file-earmark-text"></i> PEI</a>
+                    <a href="/quest_pedi"><i class="bi bi-file-earmark-text"></i> PDI</a>
+                    <a href="/quest_guide"><i class="bi bi-file-earmark-text"></i> GUIDE</a>
+                    <a href="/relatorio_avaliacao"><i class="bi bi-list"></i> Relatório Avaliação</a>
+                </div>
+
+                <button class="menu-btn" onclick="toggleMenu(this)">
+                    <i class="bi bi-person-plus"></i> 
+                    <span class="text">Questionários Social</span>
+                    <span class="tooltip-text">Questionários Social</span>
+                </button>
+                <div class="submenu">
+                    <a href="manutencao"><i class="bi bi-file-earmark-text"></i> Assistente Social</a>
+                </div>
+
+                <button class="menu-btn" onclick="toggleMenu(this)">
+                    <i class="bi bi-heart-pulse"></i> 
+                    <span class="text">Questionários Piscicológico</span>
+                    <span class="tooltip-text">Questionários Piscicológico</span>
+                </button>
+                <div class="submenu">
+                    <a href="manutencao"><i class="bi bi-chat-square-text"></i> Pisicológia</a>
+                </div>
+
+                <button class="menu-btn" onclick="toggleMenu(this)">
+                    <i class="bi bi-ui-checks"></i> 
+                    <span class="text">Gerenciamento de Alunos</span>
+                    <span class="tooltip-text">Gerenciamento de Alunos</span>
+                </button>
+                <div class="submenu">
+                    <a href="/baixa_alunos"><i class="bi bi-file-earmark-text"></i> Baixa de Alunos</a>
+                </div>
+
+                <button class="menu-btn" onclick="toggleMenu(this)">
+                    <i class="bi bi-bar-chart"></i> 
+                    <span class="text">Dashboards</span>
+                    <span class="tooltip-text">Gráficos e Dashboards</span>
+                </button>
+                <div class="submenu">
+                    <a href="/dashboard"><i class="bi bi-bar-chart"></i> Análise GUIDE</a>
+                </div>
+            
+                <button class="menu-btn" onclick="toggleMenu(this)">
+                    <i class="bi bi-list"></i> 
+                    <span class="text">Relatórios</span>
+                    <span class="tooltip-text">Relatórios</span>
+                </button>
+            
+                <div class="submenu">
+                    <a href="/gerar_pdf_pei"><i class="bi bi-list" target="_blank"></i> Relatórios PEI</a>
+                    <a href="/gerar_pdf_pdi"><i class="bi bi-list"></i> Relatórios PDI</a>
+                    <a href="/gerar_pdf_guide"><i class="bi bi-list"></i> Relatórios GUIDE</a>
+                    <a href="/pei_excel"><i class="bi bi-table"></i> Planilha PEI</a>
+                    <a href="/gerar_excel_pdi"><i class="bi bi-table"></i> Planilha PDI</a>
+                    <a href="/gerar_excel_guide"><i class="bi bi-table"></i> Planilha GUIDE</a>
+                    <a href="{{ url_for('alunos_ativos_excel') }}" class="bi-bi-planilha text-list">
+                    <i class="bi bi-person"></i> Alunos Ativos
+                    <a href="{{ url_for('excel_alunos_inativos') }}" class="bi-bi-planilha text-list">
+                    <i class="bi bi-person"></i> Alunos Inativos
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <button class="menu-btn" onclick="toggleMenu(this)">
+            <i class="bi bi-gear"></i> 
+            <span class="text">Configurações</span>
+            <span class="tooltip-text">Configurações</span>
+        </button>
+        <div class="submenu">
+            <a href="/cad_acesso"><i class="bi bi-key"></i> Alterar Senha</a>
+            <a href="/suport" target="_blank"><i class="bi bi-people"></i>Suporte Técnico</a>
+            <a href="/service_control"><i class="bi bi-gear"></i> Controle de Serviço</a>
+        </div>
+        
+        <div class="footer-sidebar">
+            WR Consultoria e Desenvolvimento
+            <p>(082) 98109-0042</p>
+        </div>  
+    </nav>
+    
+    <main class="content">
+        <div class="content-header">
+            <div>
+                <h1>Bem-vindo ao NeuroEduc</h1>
+                <p>Explore as funcionalidades do sistema para otimizar o acompanhamento e desenvolvimento dos alunos.</p>
+            </div>
+            <div class="right-section">
+                <button class="btn btn-danger" onclick="location.href='/login '">
+                    <i class="bi bi-box-arrow-right"></i> Sair Sistema
+                </button>
+            </div>  
+        </div>
+        
+    <section class="dashboard-cards">
+    <div class="dashboard-card">
+        <h3><i class="bi bi-graph-up me-2"></i>Visão Geral</h3>
+        <p>Você tem <span class="highlight">{{ total_alunos }}</span> alunos cadastrados no sistema.</p>
+        
+    </div>
+
+    <div class="dashboard-card">
+        <h3><i class="bi bi-graph-up me-2"></i>Alunos Ativos no Sistema</h3>
+        <p>Você tem <span class="highlight">{{ alunos_ativos }}</span> alunos Ativos no sistema.</p>
+        
+    </div>
+
+    <div class="dashboard-card">
+        <h3><i class="bi bi-graph-up me-2"></i>Alunos Inativos no Sistema</h3>
+        <p>Você tem <span class="highlight">{{ alunos_inativos }}</span> alunos Inativos no sistema.</p>
+        
+    </div>
+</section>
+
+            <div class="dashboard-card">
+            <h3><i class="bi bi-lightning me-2"></i>Acesso Rápido</h3>
+            <p>Utilize os links abaixo para navegar rapidamente pela entre as instituções.</p>
+            <p>
+                <a href="https://funcae.com.br/" target="_blank">🏠 Funcae</a>
+            </p>
+            <p>
+                <a href="https://www.gov.br/mec/pt-br/" target="_blank">📗 Ministério da Educação</a>
+            </p>
+            <p>
+                <a href="https://maceio.al.gov.br/secretarias-e-orgaos/semed/" target="_blank">🏦 Secretária Municipal de Maceió</a>
+            </p>
+
+            <p>
+                <a href="https://alagoas.al.gov.br/" target="_blank">🏦 Governo de Alagoas</a>
+            </p>
+
+            <p> 
+                <a href="https://www.mpal.mp.br/" target="_blank">🚨 Ministério Público de Alagoas</a>
+            </p>
+
+            <p>
+                <a href="https://www.sefaz.al.gov.br/" target="_blank">🪙 Secretaria de Estado da Fazenda de Alagoas</a>
+            </p>
+
+            <P>
+                <a href="https://files.institutoitard.com.br/pdf/Guia_Portage_Inventario_Operacionalizado_Escala_em_PDF.pdf" target="_blank">🧾 Modelo de Questionário de Avaliação</a>
+            </P>
+
+    <a href="https://dateanalytics.com.br/" target="_blank">
+    <img src="{{ url_for('static', filename='img/wr.png') }}" 
+    alt="WR Consultoria e Desenvolvimento" 
+    style="width: 120px; margin-top: 15px; opacity: 0.7; transition: opacity 0.3s ease;">
+    </a>   
+
+    </section>
+        </section>
+        </section>
+    </main>
+
+    <script>
+        let sidebarCollapsed = false;
+        
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            sidebarCollapsed = !sidebarCollapsed;
+            
+            if (sidebarCollapsed) {
+                sidebar.classList.add('collapsed');
+                toggleIcon.classList.remove('bi-chevron-left');
+                toggleIcon.classList.add('bi-chevron-right');
+                
+                // Fecha todos os submenus quando colapsar
+                document.querySelectorAll('.menu-btn').forEach(btn => {
+                    btn.classList.remove('open');
+                });
+                document.querySelectorAll('.submenu').forEach(sub => {
+                    sub.style.display = 'none';
+                });
+            } else {
+                sidebar.classList.remove('collapsed');
+                toggleIcon.classList.remove('bi-chevron-right');
+                toggleIcon.classList.add('bi-chevron-left');
+            }
+        }
+        
+        function toggleSidebarMobile() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
+        }
+        
+        // Fecha sidebar no mobile quando clicar fora
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const mobileToggle = document.querySelector('.mobile-toggle');
+            
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(event.target) && !mobileToggle.contains(event.target)) {
+                    sidebar.classList.remove('show');
+                }
+            }
+        });
+        
+        // Cascata: abre/fecha submenus
+        function toggleMenu(btn) {
+            if (sidebarCollapsed) return; // Não abre submenus quando sidebar está colapsado
+            
+            // Fecha todos os outros submenus
+            document.querySelectorAll('.menu-btn').forEach(function(b) {
+                if (b !== btn) b.classList.remove('open');
+            });
+            document.querySelectorAll('.submenu').forEach(function(sub) {
+                if (sub.previousElementSibling !== btn) sub.style.display = 'none';
+            });
+
+            // Abre/fecha submenu clicado
+            btn.classList.toggle('open');
+            let submenu = btn.nextElementSibling;
+            if (submenu && submenu.classList.contains('submenu')) {
+                submenu.style.display = submenu.style.display === 'flex' ? 'none' : 'flex';
+            }
+        }
+        
+        // Responsividade
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('show');
+                if (sidebarCollapsed) {
+                    sidebar.classList.add('collapsed');
+                }
+            } else {
+                sidebar.classList.remove('collapsed');
+                sidebarCollapsed = false;
+                const toggleIcon = document.getElementById('toggleIcon');
+                toggleIcon.classList.remove('bi-chevron-right');
+                toggleIcon.classList.add('bi-chevron-left');
+            }
+        });
+    </script>
+
+</body>
+</html>

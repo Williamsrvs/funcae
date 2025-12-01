@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚙️ Cadastro de Servidor - NeuroEduc</title>
+
+    <!-- Google Fonts para tipografia -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-image: url("{{ url_for('static', filename='img/neuroeduc1.png') }}");
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            max-width: 450px;
+            width: 90%;
+            padding: 30px 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        h1 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .label-form {
+            display: block;
+            text-align: left;
+            margin-bottom: 6px;
+            font-weight: bold;
+            font-size: 1em;
+            color: #444;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #2980b9;
+            box-shadow: 0 0 6px rgba(41, 128, 185, 0.3);
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border 0.3s;
+        }
+
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #2980b9;
+            box-shadow: 0 0 6px rgba(41, 128, 185, 0.3);
+        }
+
+        .btn {
+            width: 100%;
+            background-color: #2980b9;
+            color: white;
+            padding: 12px 0;
+            font-size: 1.1em;
+            font-weight: bold;  
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: #d6124d;
+        }
+
+        .btn-secondary {
+            background-color: #72c05e;
+        }
+
+        .btn-secondary:hover {
+            background-color: #d6124d;
+        }
+
+        .msg {
+            margin-top: 10px;
+            font-size: 0.95em;
+            color: #27ae60;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .hearder {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .img-logo {
+            size: auto;
+            display: flex;
+            justify-content: right;
+            margin-bottom: 10px;
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+            border-radius: 8px;
+        }
+
+        
+
+    </style>    
+</head>
+<body>
+    
+    <div class="img-logo">
+        <div class="btn-btn-m4">
+            <h1> 🖥️ Faça o Cadastramento do Servidor MySQL</h1>
+            <img src="https://www.ovhcloud.com/sites/default/files/styles/large_screens_1x/public/2021-09/ECX-1909_Hero_MySQL_600x400%402x-1_0.png" alt="Logo MySQL">
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>⚙️ Cadastro de Servidor</h1>
+
+        <form method="POST" action="/service_control">
+            <!-- Se usar Flask-WTF, adicione o hidden CSRF token -->
+            {{ form.hidden_tag() }}
+            {# Exemplo Flask-WTF: {{ form.hidden_tag() }} #}
+
+            <!-- Nome da Conexão -->
+            <label class="label-form" for="nome">Nome da Conexão:</label>
+            <input type="text" id="nome" name="nome" placeholder="Ex: Conexão Principal" value="{{ nome or '' }}" required>
+
+            <!-- Nome do Banco -->
+            <label class="label-form" for="db_base">Nome do Banco Dados:</label>
+            <input type="text" id="db_base" name="db_base" placeholder="Ex: db_funcae" value="{{ db_base or '' }}" required>
+
+            <!-- Hostname -->
+            <label class="label-form" for="hostname">Nome do Servidor:</label>
+            <input type="text" id="hostname" name="hostname" placeholder="Ex: server01.neuroeduc.com" value="{{ hostname or '' }}" required>
+
+            <!-- Porta -->
+            <label class="label-form" for="port">Número da Porta:</label>
+            <input type="text" id="port" name="port" placeholder="Ex: 3306" value="{{ port or '' }}" required>    
+
+            <!-- Usuário -->
+            <label class="label-form" for="user">Nome do Usuário:</label>
+            <input type="text" id="user" name="user" placeholder="Digite o nome do usuário" value="{{ user or '' }}" required>    
+
+            <!-- Senha -->
+            <label class="label-form" for="password">Senha de Acesso ao Servidor:</label>
+            <input type="password" id="password" name="password" placeholder="Digite a senha de acesso" value="{{ password or '' }}" required>
+
+            <!-- Botões -->
+            <button type="submit" class="btn">💾 Salvar Servidor</button>
+            <button type="reset" class="btn btn-primary">🗑 Limpar Campos</button>
+            <button type="button" class="btn btn-primary" onclick="window.location.href='{{ url_for('home') }}'">🔙 Voltar</button>
+
+        </form>
+
+        {% if mensagem %}
+            <p class="msg">{{ mensagem }}</p>
+        {% endif %}
+    </div>
+
+</body>
+<footer>
+    <div class="footer"> 
+        &copy 2025 - WR Consultoria e Desenvolvimento
+        <p>Tel.(82) 98109-0042 / 98863-9394</p>
+    </div>
+</footer>
+</html>

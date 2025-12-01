@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  # Banco de dados MySQL
+  mysql:
+    image: mysql:8.0
+    container_name: neuroeduca-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DB:-u799109175_db_funcae}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_INITIATION_TIMEOUT: 60
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./banco_dados:/docker-entrypoint-initdb.d
+    networks:
+      - neuroeduca-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    expose:
+      - 3306
+
+  # Aplicação Flask
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: neuroeduca-app
+    restart: unless-stopped
+    environment:
+      FLASK_ENV: ${FLASK_ENV:-production}
+      FLASK_APP: app/app.py
+      FLASK_SECRET_KEY: ${FLASK_SECRET_KEY}
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DB: ${MYSQL_DB}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    ports:
+      - "${PORT:-5000}:5000"
+    volumes:
+      - ./app/static/uploads:/app/app/static/uploads
+      - ./logs:/app/logs
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - neuroeduca-network
+    expose:
+      - 5000
+
+  # Nginx (reverse proxy - opcional)
+  nginx:
+    image: nginx:alpine
+    container_name: neuroeduca-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - app
+    networks:
+      - neuroeduca-network
+    expose:
+      - 80
+      - 443
+
+networks:
+  neuroeduca-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local

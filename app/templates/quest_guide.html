@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>📗 Questionário GUIDE - NeuroEduc</title>
+
+<!-- Bootstrap & Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"/>
+
+<!-- App CSS -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+
+<style>
+    html, body {
+            height: 100%;
+            margin: 20;
+            padding: 10;
+        }
+        
+        body {
+            min-height: 100vh;
+            margin: 0;
+            justify-items: center;
+            align-items: center;
+            background-image: url("static/img/neuroeduc1.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .conteudo-central {
+            background-color: rgba(255, 255, 255, 0.178);
+            padding: 60px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            max-width: 1350px;
+            width: 95%;
+            margin-left: auto;
+            margin-right: 100px;
+        }
+
+        .form-section-title {
+          background: linear-gradient(90deg, #b47988, #fdfcfc); /* degrade vinho */
+          color: white; /* cor do texto */
+          font-size: 1.6rem; /* aumenta o tamanho */
+          font-weight: bold; /* deixa em negrito */
+          padding: 12px 20px; /* espaçamento interno */
+          border-radius: 10px; /* cantos arredondados */
+          margin-bottom: 20px; /* espaço embaixo */
+          text-shadow: 1px 1px 3px rgba(0,0,0,0.3); /* leve sombra no texto */
+
+        }
+
+        .form-container {
+            background: #ffffff31;
+            padding: 60px;
+            max-width: 1300px;  
+            width: 90%;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            margin-left: auto;
+            margin-right: 65px;
+        }
+
+        .btn-vinho {
+            background-color: #800020;
+            color: white;
+        }
+
+        .btn-vinho:hover {
+            background-color: #66001a;
+        }
+
+        .logo {
+            max-width: 120px;
+        }
+
+        .title-text {
+            color: #800020;
+            font-weight: 700;
+        }
+
+        .form-section-title {
+            font-size: 1.3rem;
+            color: #faf9f9;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 500;
+        }
+
+        .tab-pane {
+            padding-top: 25px;
+        }
+</style>
+</head>
+
+<body>
+    <div class="container-fluid py-3">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+        <div class="conteudo-central">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Header -->
+
+            <div class="container mt-4 mb-5">
+
+    <!-- Botão Saiba Mais -->
+    <div class="d-flex justify-content-end mb-3">
+        <a href="/saiba_mais" class="btn btn-info" target="_blank">
+            Saiba Mais sobre o PEI <i class="bi bi-info-circle ms-1"></i>
+        </a>
+    </div>
+
+    <!-- Logo -->
+    <div class="text-center mb-4">
+        <img src="https://nfcidada.sefaz.al.gov.br/wp-content/uploads/2017/11/funcae-logo.png" 
+            alt="Logo NeuroEduc" 
+            class="img-fluid" 
+            style="max-height: 100px;">
+    </div>
+
+    <!-- Título -->
+    <div class="row align-items-center mb-4">
+        <div class="col-md-8">
+            <h1 class="page-title title-text mb-0">
+                <i class="bi bi-clipboard-data me-2"></i>
+                Questionário GUIDE
+            </h1>
+        </div>
+    </div>
+
+</div>
+
+
+            <!-- Form -->
+            <form method="POST" action="{{ url_for('quest_guide') }}" class="form-container">
+            <!-- Aluno -->
+            <div class="mb-4">
+                <label for="aluno_id" class="form-label">Selecione o Aluno</label>
+                <select class="form-select" id="aluno_id" name="aluno_id" required>
+                <option value="" disabled selected>Escolha um aluno...</option>
+                {% for aluno in alunos %}
+                    <option value="{{ aluno['id_aluno'] }}">{{ aluno['nome_aluno'] }}</option>
+                {% endfor %}
+                </select>
+            </div>
+
+            <!-- Abas -->
+            <ul class="nav nav-tabs mb-4" id="guideTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="socializacao-tab" data-bs-toggle="tab" data-bs-target="#socializacao" type="button" role="tab" aria-controls="socializacao" aria-selected="true">
+                    Socialização
+                </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                <button class="nav-link" id="linguagem-tab" data-bs-toggle="tab" data-bs-target="#linguagem" type="button" role="tab" aria-controls="linguagem" aria-selected="false">
+                    Linguagem
+                </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                <button class="nav-link" id="autocuidados-tab" data-bs-toggle="tab" data-bs-target="#autocuidados" type="button" role="tab" aria-controls="autocuidados" aria-selected="false">
+                    Autocuidados
+                </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                <button class="nav-link" id="motrocidadefina-tab" data-bs-toggle="tab" data-bs-target="#motrocidadefina" type="button" role="tab" aria-controls="motrocidadefina" aria-selected="false">
+                    Motrocidade Fina
+                </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                <button class="nav-link" id="motrocidadeglobal-tab" data-bs-toggle="tab" data-bs-target="#motrocidadeglobal" type="button" role="tab" aria-controls="motrocidadeglobal" aria-selected="false">
+                    Motrocidade Global
+                </button>
+                </li>
+            </ul>
+
+            <!-- Conteúdo das Abas -->
+            <div class="tab-content" id="guideTabContent">
+
+                <!-- ==================== Socialização ==================== -->
+                <div class="tab-pane fade show active" id="socializacao" role="tabpanel" aria-labelledby="socializacao-tab">
+                <h5 class="form-section-title">👪 Socialização</h5>
+                <div class="row g-3">
+                    <!-- 1 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Sorri em resposta a um rosto amigável?</label>
+                    <select class="form-select" name="sorri_amigavel" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                        </select>
+                    </div>  
+
+                    <!-- 2 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Faz contato visual com o interlocutor</label>
+                    <select class="form-select" name="contato_visual" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                        
+                    </select>
+                    </div>
+
+                    <!-- 3 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Imita ações simples (ex: bater palmas)</label>
+                    <select class="form-select" name="imita_acoes" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- 4 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Brinca ao lado de outras crianças sem conflito</label>
+                    <select class="form-select" name="brinca_com_criancas" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- 5 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Responde a gestos ou expressões sociais</label>
+                    <select class="form-select" name="responde_gestos" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- 6 -->
+                    <!-- Observações -->
+                    <div class="col-12 mt-2">
+                    <label class="form-label">Observações Socialização:</label>
+                    <textarea class="form-control" name="observacoes_socializacao" rows="5" style="margin-bottom: 10px;"></textarea>
+                    </div>
+                </div>
+                </div>
+
+                <!-- ==================== Linguagem ==================== -->
+                <div class="tab-pane fade" id="linguagem" role="tabpanel" aria-labelledby="linguagem-tab">
+                <h5 class="form-section-title">🗣️ Linguagem</h5>
+                <div class="row g-3">
+                    <!-- 1 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Responde ao próprio nome?</label> 
+                    <select class="form-select" name="responde_chamado" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- 2 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Emite sons variados para se comunicar?</label>
+                    <select class="form-select" name="emite_sons" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- 3 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Usa gestos como 'tchau' ou 'vem cá'</label>
+                    <select class="form-select" name="usa_gestos" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- 4 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Nomeia objetos familiares</label>
+                    <select class="form-select" name="nomeia_objetos" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- 5 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Constrói frases com duas ou mais palavras</label>
+                    <select class="form-select" name="constroi_frases" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- Observações -->
+                    <div class="col-12 mt-2">
+                    <label class="form-label">Observações Linguagem:</label>
+                    <textarea class="form-control" name="observacoes_linguagem" rows="5" style="width:100%;"></textarea>
+                    </div>
+                </div>
+                </div>
+
+                <!-- ==================== Auto Cuidados ==================== -->
+                <div class="tab-pane fade" id="autocuidados" role="tabpanel" aria-labelledby="autocuidados-tab">
+                <h5 class="form-section-title">🧑‍⚕️ Auto Cuidados</h5>
+                <div class="row g-3">
+
+                    <!-- 1 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Leva a colher à boca sem derramar</label>
+                    <select class="form-select" name="colher_aboca" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- 2 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Bebe em copo sem auxílio?</label>
+                    <select class="form-select" name="bebe_copos" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- 3 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Tira e coloca os sapatos com ajuda mínima</label>
+                    <select class="form-select" name="uso_sapatos" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- 4 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Controla esfíncteres (avisa para ir ao banheiro)</label>
+                    <select class="form-select" name="avisa_banheiro" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- 5 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Escova os dentes com ou sem supervisão</label>
+                    <select class="form-select" name="escova_dentes" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- Observações -->
+                    <div class="col-12 mt-2">
+                    <label class="form-label">Observações Sobre Auto Cuidados:</label>
+                    <textarea class="form-control" name="observacoes_autocuidados" rows="5" style="width:100%;"></textarea>
+                    </div>
+                </div>
+                </div>
+
+
+                <!-- ==================== MOTROCIDADE FINA ==================== -->
+                <div class="tab-pane fade" id="motrocidadefina" role="tabpanel" aria-labelledby="motrocidadefina-tab">
+                <h5 class="form-section-title">👨‍🦯 Motrocidade Fina</h5>
+                <div class="row g-3">
+
+                    <!-- 1 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Pega pequenos objetos com pinça (polegar e indicador)</label>
+                    <select class="form-select" name="pega_objetos" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- 2 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Empilha três ou mais blocos</label>
+                    <select class="form-select" name="empilha_blocos" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- 3 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Encaixa peças de brinquedos ou quebra-cabeças simples</label>
+                    <select class="form-select" name="encaixa_pecas" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- 4 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Recorta papel com tesoura adaptada</label>
+                    <select class="form-select" name="recorta_papel" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- 5 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Faz rabiscos ou traços com lápis ou giz</label>
+                    <select class="form-select" name="faz_rabiscos" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- Observações -->
+                    <div class="col-12 mt-2">
+                    <label class="form-label">Observações Sobre Motrocidade Fina:</label>
+                    <textarea class="form-control" name="observacoes_motrocidade" rows="5" style="width:100%;"></textarea>
+                    </div>
+                </div>
+                </div>
+
+
+                <!-- ==================== MOTROCIDADE GLOBAL ==================== -->
+                <div class="tab-pane fade" id="motrocidadeglobal" role="tabpanel" aria-labelledby="motrocidadeglobal-tab">
+                <h5 class="form-section-title">👩‍🦽 Motrocidade Global</h5>
+                <div class="row g-3">
+
+                    <!-- 1 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Engatinha com coordenação</label>
+                    <select class="form-select" name="engatinha" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- 2 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Anda sem apoio por pelo menos 5 metros</label>
+                    <select class="form-select" name="anda_semapoio" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- 3 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Corre com controle do equilíbrio</label>
+                    <select class="form-select" name="corre_controle" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- 4 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Sobe escadas alternando os pés</label>
+                    <select class="form-select" name="sobe_escadas_correto" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- 5 -->
+                    <div class="col-md-6">
+                    <label class="form-label">Pula com os dois pés juntos</label>
+                    <select class="form-select" name="pula_doispes" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option value="Realiza">Realiza</option>
+                        <option value="As vezes">As vezes</option>
+                        <option value="Não Realiza">Não Realiza</option>
+                    </select>
+                    </div>
+
+                    <!-- Observações -->    
+                    <div class="col-12 mt-2">
+                    <label class="form-label">Observações Sobre Motrocidade Global:</label>
+                    <textarea class="form-control" name="observacao_motroc_glob" rows="5" style="width:100%;"></textarea>
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <!-- Botões -->
+<div class="mt-4 text-center">
+    <button type="submit" class="btn btn-primary me-2">
+        <i class="bi bi-check-circle me-1"></i>
+        Salvar Questionário
+    </button>
+
+    <a href="{{ url_for('gerar_pdf_guide') }}" class="btn btn-vinho me-2">
+        <i class="bi bi-list me-1"></i>
+        Gerar PDF
+    </a>
+
+    <a href="{{ url_for('gerar_excel_guide') }}" class="btn btn-success me-2">
+        <i class="bi bi-table me-1"></i>
+        Gerar Excel
+    </a>
+
+    <a href="{{ url_for('home') }}" class="btn btn-secondary me-2">
+        <i class="bi bi-house me-1"></i>
+        Retornar Home
+    </a>
+</div>
+
+            
+            <!-- Footer -->
+            <footer class="text-center mt-4">
+        <p class="text-muted mb-0">© 2025 WR Consultoria e Desenvolvimento Sistema NeuroEduc. Todos os direitos reservados.</p>
+        <p class="text-muted mb-0">Atenção: Todos os campos com (*) são obrigatórios.</p>
+    </footer>
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/form.js') }}"></script>
+</body>
+</html>

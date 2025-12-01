@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Avaliação Anterior - NeuroEduc</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 20;
+            padding: 10;
+        }
+        body {
+            min-height: 100vh;
+            margin: 0;
+            justify-items: center;
+            align-items: center;
+            background-image: url("static/img/neuroeduc1.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .form-container {
+            background: #ffffff31;
+            padding: 60px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        .btn-vinho {
+            background-color: #800020;
+            color: white;
+        }
+        .btn-vinho:hover {
+            background-color: #66001a;
+        }
+        .title-text {
+            color: #800020;
+            font-weight: 700;
+        }
+        .form-label {
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+ <div class="container mt-4 mb-5">
+
+    <!-- Botão Saiba Mais -->
+    <div class="d-flex justify-content-end mb-3">
+        <a href="/saiba_mais" class="btn btn-info" target="_blank">
+            Saiba Mais sobre o PEI <i class="bi bi-info-circle ms-1"></i>
+        </a>
+    </div>
+
+    <!-- Logo -->
+    <div class="text-center mb-4">
+        <img src="https://nfcidada.sefaz.al.gov.br/wp-content/uploads/2017/11/funcae-logo.png" 
+            alt="Logo NeuroEduc" 
+            class="img-fluid" 
+            style="max-height: 100px;">
+    </div>
+
+    <!-- Título -->
+    <div class="row align-items-center mb-4">
+        <div class="col-md-8">
+            <h1 class="page-title title-text mb-0">
+                <i class="bi bi-clipboard-data me-2"></i>
+                Relatório de Avaliação do Aluno
+            </h1>
+        </div>
+    </div>
+
+
+        
+        <!-- Exibir mensagens flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <form method="POST" action="{{ url_for('relatorio_avaliacao') }}" enctype="multipart/form-data" class="mb-4">
+            <label for="id_aluno" class="form-label">Selecione o Aluno:</label>
+            <select name="id_aluno" id="id_aluno" class="form-select" required>
+                <option value="" disabled selected>Escolha um aluno...</option>
+                {% for aluno in alunos %}
+                    <option value="{{ aluno.id_aluno }}">
+                        {{ aluno.nome_aluno }}
+                    </option>
+                {% endfor %}
+            </select>
+            
+            <!--Incluindo campo de datas-->
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label for="data_inicio" class="form-label">Data Início:</label>
+                    <input type="date" class="form-control" id="data_inicio" name="data_inicio" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="data_fim" class="form-label">Data Fim:</label>
+                    <input type="date" class="form-control" id="data_fim" name="data_fim" required>
+                </div>
+            </div>
+
+            <!--Responsável Avaliação-->
+            <div class="col-md-12 mt-3">
+                <label for="responsavel_av" class="form-label">Responsável pela Avaliação:</label>
+                <input type="text" class="form-control" id="responsavel_av" name="responsavel_av" required>
+            </div>
+
+            <!--Criando um selectbox para o tipo de questionário-->
+            <div class="col-md-12 mt-3">
+                <label for="questionario" class="form-label">Tipo de Questionário:</label>
+                <select name="questionario" id="questionario" class="form-select" required>
+                    <option value="" disabled selected>Escolha o tipo de questionário...</option>
+                    <option value="PEI">PEI</option>
+                    <option value="PDI">PDI</option>
+                    <option value="GUIDE">GUIDE</option>
+                    <option value="OUTROS">OUTROS</option>
+                </select>
+            </div>
+
+            <!--Anexando um arquivo-->
+            <div class="col-md-12 mt-3">
+                <label for="anexo_doc" class="form-label">Anexar Arquivo de Avaliação (opcional):</label>
+                <input type="file" class="form-control" id="anexo_doc" name="anexo_doc" accept=".pdf">
+            </div>
+
+            <div class="tab-content mt-3" id="relatorioTabsContent">
+                <div class="tab-pane fade show active" id="relatorio" role="tabpanel" aria-labelledby="avaliacao-tab">
+                    <div class="mb-3">
+                        <label for="relatorio" class="form-label">Faça um relatório da avaliação do aluno com base nos dados anteriores</label>
+                        <textarea class="form-control" id="relatorio" name="relatorio" rows="10" required></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-3">
+                <!-- Criando um botão para salvar registro no banco de dados -->
+                <button type="submit" class="btn btn-primary me-2" name="action" value="save">
+                    <i class="bi bi-save"></i> Salvar Registro
+                </button>
+                <!-- Criando um botão para gerar relatório PDF -->
+                <a href="{{ url_for('relatorio_avaliacao', id_aluno=aluno_id) }}" class="btn btn-danger me-2">Relatório PDF</a>
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='/home'">
+                    <i class="bi bi-house"></i> Voltar à Página Inicial
+                </button>
+                <button type="imprimir" class="btn btn-primary" onclick="window.print()">
+                <i class="bi bi-printer"></i> Imprimir
+            </button>
+            </div>
+
+        </form>
+        <!-- Footer -->
+            <footer class="text-center mt-4">
+        <p class="text-muted mb-0">© 2025 WR Consultoria e Desenvolvimento Sistema NeuroEduc. Todos os direitos reservados.</p>
+        <p class="text-muted mb-0">Atenção: Todos os campos com (*) são obrigatórios.</p>
+    </footer>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

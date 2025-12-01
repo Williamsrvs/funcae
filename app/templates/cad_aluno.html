@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title> 👤 Cadastrar Aluno - NeuroEduc</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"/>
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 20px;
+            padding: 10px;
+        }
+        
+        body {
+            min-height: 100vh;
+            margin: 0;  
+            justify-items: center;
+            align-items: center;
+            background-image: url("static/img/neuroeduc1.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            max-width: 1300px;  
+            width: 95%;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            margin: 0 auto;
+        }
+
+        .btn-vinho {
+            background-color: #800020;
+            color: white;
+        }
+
+        .btn-vinho:hover {
+            background-color: #66001a;
+            color: white;
+        }
+
+        .title-text {
+            color: #800020;
+            font-weight: 700;
+            font-size: 42px;
+        }
+
+        .form-label {
+            font-weight: 500;   
+            font-size: 14px;
+        }
+
+        .alert {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        .busca-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #800020;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+<div class="img-fluid text-center mb-4">
+    <img src="https://nfcidada.sefaz.al.gov.br/wp-content/uploads/2017/11/funcae-logo.png" alt="Logo NeuroEduc" style="max-height: 100px;">
+</div>
+        <div class="text-center mb-4">
+        <h1 class="title-text">
+            <i class="bi bi-clipboard-data me-2"></i>
+            Cadastro de Alunos  
+        </h1>
+    </div>
+
+    <!-- Container para alertas -->
+    <div id="alertContainer"></div>
+    
+    <!-- Seção de busca -->
+    <div class="busca-section">
+        <h5 class="mb-3"><i class="bi bi-search me-2"></i>Pesquisar Aluno Existente</h5>
+        <div class="row align-items-end">
+            <div class="col-md-8">
+                <label for="cpf_busca" class="form-label">Pesquisar por CPF</label>
+                <input type="text" class="form-control" id="cpf_busca" name="cpf_busca" 
+                    placeholder="Digite o CPF do aluno (xxx.xxx.xxx-xx)" 
+                    maxlength="14">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label d-block invisible">Ação</label>
+                <button type="button" class="btn btn-primary" id="btnPesquisar">
+                    <i class="bi bi-search"></i> Pesquisar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulário principal -->
+    <form method="POST" action="{{ url_for('cad_aluno') }}" id="formAluno">
+        <input type="hidden" id="matricula_hidden" name="matricula_aluno">
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="nome_aluno" class="form-label">* Nome do Aluno</label>
+                <input type="text" class="form-control" id="nome_aluno" name="nome_aluno" required>
+            </div>
+            <div class="col-md-3">  
+                <label for="dt_nascimento" class="form-label">* Data de Nascimento</label>
+                <input type="date" class="form-control" id="dt_nascimento" name="dt_nascimento" required>
+            </div>
+            <div class="col-md-3">
+                <label for="cpf_aluno" class="form-label">* CPF Aluno</label>
+                <input type="text" class="form-control" id="cpf_aluno" name="cpf_aluno" placeholder="xxx.xxx.xxx-xx" maxlength="14" required>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label for="tipo_rede_social" class="form-label">* Tipo de Rede Social</label>
+                <select class="form-select" id="tipo_rede_social" name="tipo_rede_social" required>
+                    <option value="">Selecione</option>
+                    <option value="instagram">Instagram</option>
+                    <option value="facebook">Facebook</option>
+                    <option value="twitter">Twitter</option>
+                    <option value="linkedin">Linkedin</option>
+                    <option value="outros">Outros</option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label for="rede_social" class="form-label">* Rede Social</label>
+                <input type="text" class="form-control" id="rede_social" name="rede_social" placeholder="rede_social" required>
+            </div>
+        </div>
+        
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label for="genero" class="form-label">* Gênero</label>
+                <select class="form-select" id="genero" name="genero" required>
+                    <option value="">Selecione</option>
+                    <option value="Masc">Masculino</option>
+                    <option value="Fem">Feminino</option>
+                    <option value="Não Informado">Não Informado</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="whatsapp" class="form-label">📲 * Whatsapp</label>
+                <input type="tel" class="form-control" id="whatsapp" name="whatsapp" required>
+            </div>
+            <div class="col-md-5">
+                <label for="endereco_aluno" class="form-label">Endereço</label>
+                <input type="text" class="form-control" id="endereco_aluno" name="endereco_aluno">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="tipo_responsavel" class="form-label">* Tipo de Responsável</label>
+                <select class="form-select" id="tipo_responsavel" name="tipo_responsavel" required>
+                    <option value="">Selecione</option>
+                    <option value="Pais">Pais</option>
+                    <option value="Avós Materno ou Paterno">Avós Materno ou Paterno</option>
+                    <option value="Tios ou Tias">Tios ou Tias</option>
+                    <option value="Irmãos">Irmãos</option>
+                    <option value="Outros Não Listado">Outros Não Listado</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="nome_pai" class="form-label">Nome do Pai / Responsável</label>
+                <input type="text" class="form-control" id="nome_pai" name="nome_pai">
+            </div>
+            <div class="col-md-4">
+                <label for="nome_mae" class="form-label">Nome da Mãe / Responsável</label>
+                <input type="text" class="form-control" id="nome_mae" name="nome_mae">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="patologia" class="form-label">* Patologia</label>
+                <select class="form-select" id="patologia" name="patologia" required>
+                    <option value="">Selecione</option>
+                    <option value="Autismo">Autismo</option>
+                    <option value="Sindrome Down">Síndrome de Down</option>
+                    <option value="Deficiência Intelectual">Deficiência Intelectual</option>
+                    <option value="Deficiência Física">Deficiência Física</option>
+                    <option value="Deficiência Visual">Deficiência Visual</option>
+                    <option value="Deficiência Auditiva">Deficiência Auditiva</option>
+                    <option value="Transtorno Déficit Atenção">Transtorno Déficit Atenção</option>
+                    <option value="Outros">Outros</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="tipo_educacao" class="form-label">* Tipo de Educação</label>
+                <select class="form-select" id="tipo_educacao" name="tipo_educacao" required>
+                    <option value="">Selecione</option>
+                    <option value="AEE">AEE</option>
+                    <option value="EJAE">EJAI</option>
+                    <option value="Outros">Outros</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="contato" class="form-label">* Contato</label>
+                <input type="text" class="form-control" id="contato" name="contato" maxlength="15" required>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="nome_escola" class="form-label">Nome da Escola</label>
+                <input type="text" class="form-control" id="nome_escola" name="nome_escola">
+            </div>
+            <div class="col-md-4">
+                <label for="turma" class="form-label">Turma</label>
+                <input type="text" class="form-control" id="turma" name="turma">
+            </div>
+            <div class="col-md-4">
+                <label for="coordenador_pedagogico" class="form-label">Coordenador Pedagógico</label>
+                <input type="text" class="form-control" id="coordenador_pedagogico" name="coordenador_pedagogico">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="profissional_AEE" class="form-label">Profissional AEE</label>
+                <input type="text" class="form-control" id="profissional_AEE" name="profissional_AEE">
+            </div>
+            <div class="col-md-4">
+                <label for="cod_cid" class="form-label">Código CID</label>
+                <input type="text" class="form-control" id="cod_cid" name="cod_cid">
+            </div>
+            <div class="col-md-4">
+                <label for="equipe_multidisciplinar" class="form-label">Equipe Multidisciplinar</label>
+                <input type="text" class="form-control" id="equipe_multidisciplinar" name="equipe_multidisciplinar">
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="status_aluno" class="form-label">* Status do Aluno</label>
+                <select class="form-select" id="status_aluno" name="status_aluno" required>
+                    <option value="">Selecione</option>
+                    <option value="Ativo">Ativo</option>
+                    <option value="Inativo">Inativo</option>
+                    <option value="Outros">Outros</option>
+                </select>
+            </div>
+            <div class="col-md-8">
+                <label for="observacoes" class="form-label">Observações</label>
+                <textarea class="form-control" id="observacoes" name="observacoes" rows="2" maxlength="200"></textarea>
+            </div>
+        </div>
+
+        <div class="mt-4 text-end">
+            <button type="submit" class="btn btn-success me-2" id="btnCadastrar">
+                <i class="bi bi-check-lg"></i> Cadastrar
+            </button>
+            <button type="button" class="btn btn-warning me-2" id="btnAtualizar" style="display:none;">
+                <i class="bi bi-pencil"></i> Atualizar
+            </button>
+            <button type="button" class="btn btn-danger me-2" onclick="limparFormulario()">
+                <i class="bi bi-arrow-clockwise"></i> Limpar
+            </button>
+            <a href="{{ url_for('home') }}" class="btn btn-secondary me-2">
+                <i class="bi bi-house"></i> Home
+            </a>
+            <button type="button" class="btn btn-primary" onclick="window.print()">
+                <i class="bi bi-printer"></i> Imprimir
+            </button>
+        </div>
+    </form>
+
+    <footer class="text-center mt-4">
+        <p class="text-muted mb-0">© 2025 WR Consultoria e Desenvolvimento Sistema NeuroEduc. Todos os direitos reservados.</p>
+        <p class="text-muted mb-0">Atenção: Todos os campos com (*) são obrigatórios.</p>
+    </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const btnPesquisar = document.getElementById('btnPesquisar');
+    const btnAtualizar = document.getElementById('btnAtualizar');
+    const inputCpfBusca = document.getElementById('cpf_busca');
+    const inputCpfAluno = document.getElementById('cpf_aluno');
+    const alertContainer = document.getElementById('alertContainer');
+    const formAluno = document.getElementById('formAluno');
+
+    // Aplicar máscaras de CPF
+    function aplicarMascaraCPF(input) {
+        input.addEventListener('input', function(e) {
+            let valor = e.target.value.replace(/\D/g, '');
+            
+            if (valor.length <= 11) {
+                valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
+                valor = valor.replace(/(\d{3})(\d)/, '$1.$2');
+                valor = valor.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            }
+            
+            e.target.value = valor;
+        });
+    }
+    
+    aplicarMascaraCPF(inputCpfBusca);
+    aplicarMascaraCPF(inputCpfAluno);
+
+    // Função para mostrar alertas
+    function showAlert(message, type) {
+        alertContainer.innerHTML = '';
+        
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        alertContainer.appendChild(alertDiv);
+        
+        setTimeout(() => {
+            if (alertDiv && alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+
+    // Função para preencher formulário
+    function preencherFormulario(aluno) {
+        console.log('Preenchendo formulário com:', aluno);
+        
+        const campos = {
+            'nome_aluno': aluno.nome_aluno,
+            'dt_nascimento': aluno.dt_nascimento,
+            'cpf_aluno': aluno.cpf_aluno,
+            'tipo_rede_social': aluno.tipo_rede_social,
+            'rede_social': aluno.rede_social,
+            'genero': aluno.genero,
+            'whatsapp': aluno.whatsapp,
+            'endereco_aluno': aluno.endereco_aluno,
+            'tipo_responsavel': aluno.tipo_responsavel,
+            'nome_pai': aluno.nome_pai,
+            'nome_mae': aluno.nome_mae,
+            'patologia': aluno.patologia,
+            'tipo_educacao': aluno.tipo_educacao,
+            'contato': aluno.contato,
+            'nome_escola': aluno.nome_escola,
+            'turma': aluno.turma,
+            'coordenador_pedagogico': aluno.coordenador_pedagogico,
+            'profissional_AEE': aluno.profissional_AEE,
+            'cod_cid': aluno.cod_cid,
+            'equipe_multidisciplinar': aluno.equipe_multidisciplinar,
+            'status_aluno': aluno.status_aluno,
+            'observacoes': aluno.observacoes
+        };
+        
+        Object.entries(campos).forEach(([nome, valor]) => {
+            const campo = document.getElementById(nome);
+            if (campo && valor !== null && valor !== undefined && valor !== '') {
+                campo.value = valor;
+                console.log(`Campo ${nome} preenchido com: ${valor}`);
+            }
+        });
+
+        // Preencher matrícula oculta
+        if (aluno.matricula_aluno) {
+            document.getElementById('matricula_hidden').value = aluno.matricula_aluno;
+            showAlert(`<strong>Aluno encontrado!</strong> Matrícula: ${aluno.matricula_aluno}`, 'info');
+        }
+
+        // Trocar botões
+        document.getElementById('btnCadastrar').style.display = 'none';
+        document.getElementById('btnAtualizar').style.display = 'inline-block';
+    }
+
+    // Event listener do botão pesquisar
+    btnPesquisar.addEventListener('click', function() {
+        const cpf = inputCpfBusca.value.trim();
+        
+        console.log('Iniciando busca por CPF:', cpf);
+        
+        if (!cpf) {
+            showAlert('Por favor, digite um CPF para pesquisar.', 'warning');
+            inputCpfBusca.focus();
+            return;
+        }
+        
+        const cpfLimpo = cpf.replace(/\D/g, '');
+        if (cpfLimpo.length !== 11) {
+            showAlert('Por favor, digite um CPF válido com 11 dígitos.', 'warning');
+            inputCpfBusca.focus();
+            return;
+        }
+        
+        // Loading
+        btnPesquisar.innerHTML = '<i class="bi bi-hourglass-split"></i> Pesquisando...';
+        btnPesquisar.disabled = true;
+        
+        fetch(`/buscar_aluno?cpf_aluno=${encodeURIComponent(cpf)}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Dados recebidos:', data);
+                
+                if (data.erro) {
+                    showAlert(`Erro: ${data.mensagem}`, 'danger');
+                    return;
+                }
+                
+                if (data.encontrado && data.aluno) {
+                    preencherFormulario(data.aluno);
+                    showAlert('Aluno encontrado e dados carregados!', 'success');
+                } else {
+                    showAlert(data.mensagem || 'Aluno não encontrado.', 'info');
+                    limparFormulario();
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showAlert('Erro ao buscar aluno. Tente novamente.', 'danger');
+            })
+            .finally(() => {
+                btnPesquisar.innerHTML = '<i class="bi bi-search"></i> Pesquisar';
+                btnPesquisar.disabled = false;
+            });
+    });
+
+    // Pesquisar com Enter
+    inputCpfBusca.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            btnPesquisar.click();
+        }
+    });
+
+    // Event listener do botão atualizar
+    btnAtualizar.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        const matricula = document.getElementById('matricula_hidden').value;
+        
+        if (!matricula) {
+            showAlert('Nenhum aluno foi carregado para atualização!', 'warning');
+            return;
+        }
+        
+        // Confirmar atualização
+        if (!confirm('Deseja realmente atualizar os dados deste aluno?')) {
+            return;
+        }
+        
+        // Alterar action do formulário para a rota de atualização
+        const actionOriginal = formAluno.action;
+        formAluno.action = "{{ url_for('atualizar_aluno') }}";
+        
+        // Submeter formulário
+        formAluno.submit();
+        
+        // Restaurar action original (caso necessite)
+        setTimeout(() => {
+            formAluno.action = actionOriginal;
+        }, 100);
+    });
+
+    // Função global para limpar formulário
+    window.limparFormulario = function() {
+        document.getElementById('formAluno').reset();
+        document.getElementById('matricula_hidden').value = '';
+        document.getElementById('cpf_busca').value = '';
+        document.getElementById('btnCadastrar').style.display = 'inline-block';
+        document.getElementById('btnAtualizar').style.display = 'none';
+        alertContainer.innerHTML = '';
+    };
+});
+</script>
+
+</body>
+</html>

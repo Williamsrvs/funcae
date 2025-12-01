@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>🔒 Cadastro de Usuário - NeuroEduc</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <style>
+        body {
+            min-height: 100vh;
+            margin: 0;
+            
+            background-image: url("https://st4.depositphotos.com/5413744/20733/i/1600/depositphotos_207332442-stock-photo-top-view-back-school-concept.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.0);
+            padding: 10px;
+            border-radius: 80px;
+            box-sizing: border-box 10px 10px 10px 10px;
+            box-shadow: 13px 18px #3d3c3c;
+            backdrop-filter: blur(15px);
+            border: 10px solid rgba(192, 5, 5, 0.644);
+            width: 95%;
+            max-width: 800px;
+            min-height: 700px;
+            margin-left: 50px;
+            position: relative; 
+            overflow: hidden;
+        }   
+
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: linear-gradient(90deg, #860913, #f81d15, #86091e);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        .btn-cadastrar {
+            background: linear-gradient(135deg, #860928 0%, #f81515 100%);
+            color: rgb(253, 250, 250);
+            border: none;
+            padding: 15px 30px;
+            font-weight: 600;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-cadastrar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-cadastrar:hover::before {
+            left: 100%;
+        }
+        
+        .btn-cadastrar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(9, 134, 82, 0.4);
+            background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+        }
+
+        .btn-cadastrar:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 15px rgba(9, 134, 82, 0.3);
+        }
+        
+        .btn-voltar {
+            background: linear-gradient(135deg, #6194c0 0%, #0b437a 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-weight: 600;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-voltar:hover {
+            background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+            color: white;
+        }
+
+        .btn-voltar:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+        }
+        
+        .title-text {
+            color: #f0f5f5;
+            font-weight: 700;
+            margin-bottom: 30px;
+            font-size: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .title-text::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #86091e, #f81d15);
+            border-radius: 2px;
+        }
+        
+        .form-control, .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px 18px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #860909;
+            box-shadow: 0 0 0 0.25rem rgba(219, 247, 235, 0.15);
+            background-color: white;
+            transform: translateY(-1px);
+        }
+
+        .form-control:hover:not(:focus), .form-select:hover:not(:focus) {
+            border-color: #158af8;
+            background-color: white;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: #860909;
+            margin-bottom: 8px;
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #0c0c0c;
+            z-index: 5;
+        }
+        
+        .link-login {
+            color: #0c0c0c;
+            size: 40px;
+            background-color:transparent;  
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+
+        }
+
+        .link-login::after {
+            content: '';
+            position: absolute; 
+            width: 0;   
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: #0c0c03;
+            transition: width 0.3s ease;
+        }
+        
+        .link-login:hover {
+            color: #ee1919;
+            box-shadow: #0c0c0c;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;   
+            font-size: 30px;
+            
+        }
+
+        .link-login:hover::after {
+            width: 100%;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .button-group .btn {
+            flex: 1;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .form-container {
+                margin-left: 0;
+                max-width: 90%;
+                min-height: auto;
+                padding: 40px 25px;
+            }
+            
+            body {
+                justify-content: center;
+                padding: 15px;
+            }
+
+            .title-text {
+                font-size: 5rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn-cadastrar, .btn-voltar {
+                padding: 12px 25px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-container {
+                padding: 30px 20px;
+            }
+
+            .form-control, .form-select {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+        }
+
+        /* Animações de entrada */
+        .form-container {
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+        .form-group:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <div class="mb-4">
+        <h2 class="title-text">Cadastro de Usuário</h2>
+        <div class="img-icone">
+            <img src="static/img/icone1-Photoroom.png" alt="Logo NeuroEduc" style="width: 100px; display: block; margin: 0 auto;">
+        </div>
+    </div>
+    
+    <form action="/cad_acesso" method="POST">
+        <div class="form-group mb-5">
+            <label for="nome_usuario" class="form-label">
+                <i class="bi bi-person-fill me-2"></i>Nome completo
+            </label>
+            <div class="input-group">
+                <input type="text" class="form-control" id="nome_usuario" name="nome_usuario" required 
+                    placeholder="Digite seu nome completo">
+                <i class="bi bi-person input-icon"></i>
+            </div>
+        </div>
+        
+        <div class="form-group mb-5">
+            <label for="email" class="form-label">
+                <i class="bi bi-envelope-fill me-2"></i>E-mail
+            </label>
+            <div class="input-group">
+                <input type="email" class="form-control" id="email" name="email" required 
+                    placeholder="seu.email@exemplo.com">
+                <i class="bi bi-envelope input-icon"></i>
+            </div>
+        </div>
+        
+        <div class="form-group mb-5">
+            <label for="dt_nascimento" class="form-label">
+                <i class="bi bi-calendar-fill me-2"></i>Data de Nascimento
+            </label>
+            <div class="input-group">
+                <input type="date" class="form-control" id="dt_nascimento" name="dt_nascimento" required>
+                <i class="bi bi-calendar input-icon"></i>
+            </div>
+        </div>
+        
+        <div class="form-group mb-5">
+            <label for="senha" class="form-label">
+                <i class="bi bi-lock-fill me-2"></i>Senha
+            </label>
+            <div class="input-group">
+                <input type="password" class="form-control" id="senha" name="senha" required 
+                    placeholder="Digite sua senha">
+                <i class="bi bi-lock input-icon"></i>
+            </div>
+        </div>
+        
+        <div class="form-group mb-5">
+            <label for="tipo_acesso" class="form-label">
+                <i class="bi bi-shield-fill me-2"></i>Tipo de Acesso
+            </label>
+            <div class="input-group">
+                <select class="form-select" id="tipo_acesso" name="tipo_acesso" required>
+                    <option value="">Selecione um tipo</option>
+                    <option value="Master">🏢 Diretoria / Gestores</option>
+                    <option value="Pleno">💼 Administrativo</option>
+                    <option value="Pleno">📚 Coord. Pedagógica</option>
+                    <option value="Pleno">👥 Assistente Social</option>
+                    <option value="Pleno">🩺 Médicos</option>
+                    <option value="Pleno">🧠 Psicólogos</option>
+                    <option value="Pleno">🏃 Fisioterapeutas</option>
+                    <option value="Junior">💪 Educador Físico</option>
+                    <option value="Junior">👤 Outros Não Listados</option>
+                </select>
+                <i class="bi bi-shield input-icon"></i>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button type="submit" class="btn btn-cadastrar">
+                <i class="bi bi-person-plus me-2"></i>Cadastrar
+            </button>
+            <a href="/login" class="btn btn-voltar">
+                <i class="bi bi-arrow-left me-2"></i>Faça Login
+            </a>
+        </div>
+        
+        <div class="text-center mt-4">   
+            <a href="/login" class="link-login">
+                <i class="bi bi-box-arrow-in-right me-1"></i>Já possui uma conta? Faça login
+            </a>
+            <div for="info" class="form-label">
+            </div>   
+        </div>    
+    </form>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Adiciona interatividade aos campos
+    document.querySelectorAll('.form-control, .form-select').forEach(field => {
+        field.addEventListener('focus', function() {
+            this.parentElement.style.transform = 'scale(1.02)';
+        });
+        
+        field.addEventListener('blur', function() {
+            this.parentElement.style.transform = 'scale(1)';
+        });
+    });
+
+    const togglePassword = document.querySelector('#togglePassword');
+    const passwordInput = document.querySelector('#senha');
+
+    togglePassword.addEventListener('click', function (e) {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.classList.toggle('bi-eye');
+    });
+    
+</script>
+</body>
+</html>

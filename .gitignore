@@ -1,0 +1,126 @@
+# ============================================
+# AMBIENTE E CONFIGURAÇÃO
+# ============================================
+.env
+.env.local
+.env.*.local
+config/secrets.json
+
+# ============================================
+# PYTHON
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ============================================
+# AMBIENTE VIRTUAL
+# ============================================
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv
+
+# ============================================
+# IDE E EDITORES
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+.backup
+.tmp
+
+# ============================================
+# BANCOS DE DADOS
+# ============================================
+*.db
+*.sqlite
+*.sqlite3
+database.db
+*.sql
+
+# ============================================
+# UPLOADS E ARQUIVOS TEMPORÁRIOS
+# ============================================
+app/static/uploads/*
+app/static/uploads/!.gitkeep
+logs/*
+logs/!.gitkeep
+tmp/
+temp/
+*.log
+*.log.*
+
+# ============================================
+# SISTEMA OPERACIONAL
+# ============================================
+Thumbs.db
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# ============================================
+# PYTEST E TESTES
+# ============================================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+test-results.xml
+
+# ============================================
+# NODE (SE USADO PARA BUILD)
+# ============================================
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# ============================================
+# DOCKER
+# ============================================
+.docker/
+
+# ============================================
+# ARQUIVOS DE APLICAÇÃO SENSÍVEIS
+# ============================================
+*.pem
+*.key
+*.crt
+*.cert
+secrets.json
+credentials.json
